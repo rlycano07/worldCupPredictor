@@ -5,12 +5,16 @@
     <button type="button"
             disabled="@(Matchup.TeamA is null)"
             class="@TeamButtonClass(Matchup.TeamA)"
+            title="@TeamTitle(Matchup.TeamA)"
+            aria-label="@TeamAriaLabel(Matchup.TeamA)"
             @onclick="() => SelectWinner(Matchup.TeamA)">
         @TeamLabel(Matchup.TeamA)
     </button>
     <button type="button"
             disabled="@(Matchup.TeamB is null)"
             class="@TeamButtonClass(Matchup.TeamB)"
+            title="@TeamTitle(Matchup.TeamB)"
+            aria-label="@TeamAriaLabel(Matchup.TeamB)"
             @onclick="() => SelectWinner(Matchup.TeamB)">
         @TeamLabel(Matchup.TeamB)
     </button>
@@ -49,14 +53,21 @@
             return;
         }
 
-        builder.OpenElement(3, "span");
-        builder.AddAttribute(4, "class", "match-team-code");
-        builder.AddContent(5, team.FlagCode);
+        builder.OpenElement(3, "img");
+        builder.AddAttribute(4, "class", "match-team-flag");
+        builder.AddAttribute(5, "src", team.FlagImageUrl);
+        builder.AddAttribute(6, "alt", string.Empty);
+        builder.AddAttribute(7, "aria-hidden", "true");
         builder.CloseElement();
 
-        builder.OpenElement(6, "span");
-        builder.AddAttribute(7, "class", "match-team-name");
-        builder.AddContent(8, team.Name);
+        builder.OpenElement(8, "span");
+        builder.AddAttribute(9, "class", "match-team-code");
+        builder.AddContent(10, team.FlagCode);
         builder.CloseElement();
     };
+
+    private static string TeamTitle(Team? team) => team?.Name ?? "To be decided";
+
+    private static string TeamAriaLabel(Team? team) =>
+        team is null ? "To be decided" : $"{team.Name}, {team.FlagCode}";
 }

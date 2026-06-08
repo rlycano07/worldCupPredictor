@@ -58,7 +58,11 @@ public static class TournamentData
             Id = id,
             Name = name,
             Teams = teamNames
-                .Select(teamName => new Team(CreateTeamId(teamName), teamName, FlagCode(teamName)))
+                .Select(teamName =>
+                {
+                    var flagCode = FlagCode(teamName);
+                    return new Team(CreateTeamId(teamName), teamName, flagCode, FlagImageUrl(flagCode));
+                })
                 .ToList()
         };
 
@@ -163,5 +167,64 @@ public static class TournamentData
         "Uruguay" => "URU",
         "Uzbekistan" => "UZB",
         _ => "TBD"
+    };
+
+    private static string FlagImageUrl(string flagCode)
+    {
+        var slug = FlagImageSlug(flagCode);
+        return string.IsNullOrWhiteSpace(slug) ? string.Empty : $"https://flagcdn.com/{slug}.svg";
+    }
+
+    private static string FlagImageSlug(string flagCode) => flagCode switch
+    {
+        "ALG" => "dz",
+        "ARG" => "ar",
+        "AUS" => "au",
+        "AUT" => "at",
+        "BEL" => "be",
+        "BIH" => "ba",
+        "BRA" => "br",
+        "CAN" => "ca",
+        "CIV" => "ci",
+        "COD" => "cd",
+        "COL" => "co",
+        "CPV" => "cv",
+        "CRO" => "hr",
+        "CUW" => "cw",
+        "CZE" => "cz",
+        "ECU" => "ec",
+        "EGY" => "eg",
+        "ENG" => "gb-eng",
+        "FRA" => "fr",
+        "GER" => "de",
+        "GHA" => "gh",
+        "HAI" => "ht",
+        "IRN" => "ir",
+        "IRQ" => "iq",
+        "JOR" => "jo",
+        "JPN" => "jp",
+        "KOR" => "kr",
+        "KSA" => "sa",
+        "MAR" => "ma",
+        "MEX" => "mx",
+        "NED" => "nl",
+        "NOR" => "no",
+        "NZL" => "nz",
+        "PAN" => "pa",
+        "PAR" => "py",
+        "POR" => "pt",
+        "QAT" => "qa",
+        "RSA" => "za",
+        "SCO" => "gb-sct",
+        "SEN" => "sn",
+        "ESP" => "es",
+        "SUI" => "ch",
+        "SWE" => "se",
+        "TUN" => "tn",
+        "TUR" => "tr",
+        "URU" => "uy",
+        "USA" => "us",
+        "UZB" => "uz",
+        _ => string.Empty
     };
 }

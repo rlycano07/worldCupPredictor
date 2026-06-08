@@ -3,8 +3,9 @@
     {
         <span class="team-position">@Position</span>
     }
-    <span class="team-flag">@Team.FlagCode</span>
+    <img class="team-flag" src="@Team.FlagImageUrl" alt="" aria-hidden="true" />
     <span class="team-name">@Team.Name</span>
+    <span class="team-code">@Team.FlagCode</span>
 </div>
 
 @code {
