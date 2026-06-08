@@ -789,6 +789,13 @@ main {
     background: var(--palette-surface-soft);
 }
 
+.cup-mark img {
+    width: 5.35rem;
+    height: 5.35rem;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
 .final-matchup {
     align-self: center;
     width: min(100%, 18rem);
