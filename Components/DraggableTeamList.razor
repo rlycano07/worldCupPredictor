@@ -13,7 +13,7 @@
             @ondrop="() => DropTeam(currentIndex)"
             @ondragend="ClearDragState"
             class="draggable-row @(hoverIndex == currentIndex ? "drop-target" : null)">
-            <TeamCard Team="team" Position="@(currentIndex + 1)" />
+            <TeamCard Team="team" Position="@(currentIndex + 1)" Qualification="@GetQualification(team.Id)" />
         </li>
     }
 </ol>
@@ -22,6 +22,8 @@
     [Parameter, EditorRequired] public string GroupId { get; set; } = default!;
     [Parameter, EditorRequired] public string GroupName { get; set; } = default!;
     [Parameter, EditorRequired] public IReadOnlyList<Team> Teams { get; set; } = [];
+    [Parameter, EditorRequired] public IReadOnlyDictionary<string, QualificationStatus> QualificationStatuses { get; set; } =
+        new Dictionary<string, QualificationStatus>();
 
     private int? draggedIndex;
     private int? hoverIndex;
@@ -41,4 +43,7 @@
         draggedIndex = null;
         hoverIndex = null;
     }
+
+    private QualificationStatus? GetQualification(string teamId) =>
+        QualificationStatuses.GetValueOrDefault(teamId);
 }

@@ -1,4 +1,4 @@
-<div class="team-card @CssClass">
+<div class="team-card @CssClass @(Qualification is not null ? $"qualified {Qualification.CssClass}" : null)">
     @if (Position is not null)
     {
         <span class="team-position">@Position</span>
@@ -6,10 +6,19 @@
     <img class="team-flag" src="@Team.FlagImageUrl" alt="" aria-hidden="true" />
     <span class="team-name">@Team.Name</span>
     <span class="team-code">@Team.FlagCode</span>
+    @if (Qualification is not null)
+    {
+        <span class="qualification-badge">@Qualification.Label</span>
+    }
+    else
+    {
+        <span class="qualification-badge empty" aria-hidden="true"></span>
+    }
 </div>
 
 @code {
     [Parameter, EditorRequired] public Team Team { get; set; } = default!;
     [Parameter] public int? Position { get; set; }
     [Parameter] public string? CssClass { get; set; }
+    [Parameter] public QualificationStatus? Qualification { get; set; }
 }

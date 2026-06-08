@@ -42,6 +42,23 @@ public sealed class BracketGenerator
         return TournamentData.FindTeam(winnerId);
     }
 
+    public IReadOnlySet<string> GetRoundOf32TeamIds(PredictionState state) =>
+        GetRoundOf32QualificationStatuses(state).Keys.ToHashSet();
+
+    public IReadOnlyDictionary<string, QualificationStatus> GetRoundOf32QualificationStatuses(PredictionState state)
+    {
+        var statuses = new Dictionary<string, QualificationStatus>();
+        var bestThirdAssignments = AssignBestThirdPlaceSlots(state);
+
+        foreach (var mapping in TournamentData.RoundOf32Mapping)
+        {
+            AddQualificationStatus(state, mapping.SlotA, bestThirdAssignments, statuses);
+            AddQualificationStatus(state, mapping.SlotB, bestThirdAssignments, statuses);
+        }
+
+        return statuses;
+    }
+
     public static int RoundIndex(string roundId) =>
         Array.FindIndex(RoundDefinitions, definition => definition.Id == roundId);
 
@@ -160,6 +177,38 @@ public sealed class BracketGenerator
         }
 
         return assignments;
+    }
+
+    private static void AddQualificationStatus(
+        PredictionState state,
+        KnockoutSlot slot,
+        IReadOnlyDictionary<string, Team> bestThirdAssignments,
+        Dictionary<string, QualificationStatus> statuses)
+    {
+        if (slot.IsBestThirdSlot)
+        {
+            if (bestThirdAssignments.TryGetValue(slot.GroupId, out var bestThirdTeam))
+            {
+                statuses[bestThirdTeam.Id] = new QualificationStatus("Best 3rd", "best-third");
+            }
+
+            return;
+        }
+
+        var team = ResolveRankedTeam(state, slot.GroupId, slot.Position);
+        if (team is null)
+        {
+            return;
+        }
+
+        var status = slot.Position switch
+        {
+            1 => new QualificationStatus("1st", "first-place"),
+            2 => new QualificationStatus("2nd", "second-place"),
+            _ => new QualificationStatus($"{slot.Position}th", "qualified")
+        };
+
+        statuses.TryAdd(team.Id, status);
     }
 
     private static Team? ResolveRankedTeam(PredictionState state, string groupId, int position)

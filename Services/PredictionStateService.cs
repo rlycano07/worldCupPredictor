@@ -74,6 +74,11 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
 
     public List<KnockoutRound> GetBracket() => bracketGenerator.Generate(State);
 
+    public IReadOnlySet<string> GetQualifiedTeamIds() => bracketGenerator.GetRoundOf32TeamIds(State);
+
+    public IReadOnlyDictionary<string, QualificationStatus> GetQualificationStatuses() =>
+        bracketGenerator.GetRoundOf32QualificationStatuses(State);
+
     public Team? GetChampion() => bracketGenerator.GetChampion(State);
 
     public async Task SelectWinnerAsync(Matchup matchup, Team team)

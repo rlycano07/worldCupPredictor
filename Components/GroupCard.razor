@@ -8,13 +8,14 @@
         </div>
         <button class="ghost-action" @onclick="ResetGroup">Reset</button>
     </div>
-    <DraggableTeamList GroupId="@Group.Id" GroupName="@Group.Name" Teams="@Teams" />
+    <DraggableTeamList GroupId="@Group.Id" GroupName="@Group.Name" Teams="@Teams" QualificationStatuses="@QualificationStatuses" />
 </article>
 
 @code {
     [Parameter, EditorRequired] public Group Group { get; set; } = default!;
 
     private IReadOnlyList<Team> Teams => PredictionState.GetGroupRanking(Group.Id);
+    private IReadOnlyDictionary<string, QualificationStatus> QualificationStatuses => PredictionState.GetQualificationStatuses();
 
     private async Task ResetGroup() => await PredictionState.ResetGroupAsync(Group.Id);
 }

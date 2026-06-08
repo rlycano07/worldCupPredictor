@@ -280,7 +280,7 @@ main {
 
 .groups-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
 }
 
@@ -332,14 +332,42 @@ main {
 .team-card {
     display: grid;
     min-height: 3.25rem;
-    grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 3.2rem;
+    grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 3.2rem 4.4rem;
     align-items: center;
     gap: 0.65rem;
     padding: 0.65rem;
     border: 1px solid var(--line);
     border-radius: 0.5rem;
     background: var(--panel-strong);
-    transition: border-color 160ms ease, background 160ms ease;
+    transition: border-color 160ms ease, background 160ms ease, box-shadow 160ms ease;
+}
+
+.team-card.qualified {
+    border-color: rgba(56, 217, 169, 0.62);
+    background:
+        linear-gradient(90deg, rgba(56, 217, 169, 0.16), transparent 45%),
+        var(--panel-strong);
+    box-shadow: inset 4px 0 0 var(--accent), 0 0 0 1px rgba(56, 217, 169, 0.08);
+}
+
+.team-card.first-place {
+    border-color: rgba(255, 209, 102, 0.74);
+    background:
+        linear-gradient(90deg, rgba(255, 209, 102, 0.2), transparent 48%),
+        var(--panel-strong);
+    box-shadow: inset 4px 0 0 var(--gold), 0 0 0 1px rgba(255, 209, 102, 0.1);
+}
+
+.team-card.second-place {
+    border-color: rgba(56, 217, 169, 0.62);
+}
+
+.team-card.best-third {
+    border-color: rgba(116, 192, 252, 0.72);
+    background:
+        linear-gradient(90deg, rgba(116, 192, 252, 0.18), transparent 48%),
+        var(--panel-strong);
+    box-shadow: inset 4px 0 0 #74c0fc, 0 0 0 1px rgba(116, 192, 252, 0.1);
 }
 
 .draggable-row:hover .team-card {
@@ -383,6 +411,32 @@ main {
     text-align: center;
     border-radius: 0.3rem;
     background: var(--gold);
+}
+
+.qualification-badge {
+    justify-self: end;
+    min-width: 3.9rem;
+    padding: 0.25rem 0.35rem;
+    color: #061116;
+    font-size: 0.68rem;
+    font-weight: 950;
+    text-align: center;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 18px rgba(56, 217, 169, 0.24);
+}
+
+.team-card.first-place .qualification-badge {
+    background: var(--gold);
+}
+
+.team-card.best-third .qualification-badge {
+    color: #061116;
+    background: #74c0fc;
+}
+
+.qualification-badge.empty {
+    visibility: hidden;
 }
 
 .ko-board {
@@ -767,6 +821,10 @@ main {
 }
 
 @media (max-width: 1100px) {
+    .groups-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
     .ko-board {
         overflow-x: auto;
     }
@@ -777,6 +835,22 @@ main {
 }
 
 @media (max-width: 720px) {
+    .groups-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .team-card {
+        grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 3rem;
+    }
+
+    .team-code {
+        display: none;
+    }
+
+    .qualification-badge {
+        min-width: 3.7rem;
+    }
+
     .ko-board {
         min-width: 0;
         padding: 1rem;
