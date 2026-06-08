@@ -2,47 +2,47 @@
     color-scheme: light;
 
     /* Palette: edit these light-theme tokens to recolor the app. */
-    --palette-bg: #f4fbf8;
-    --palette-surface: rgba(255, 255, 255, 0.92);
+    --palette-bg: #f4f7f9;
+    --palette-surface: rgba(255, 255, 255, 0.94);
     --palette-surface-strong: #ffffff;
-    --palette-surface-soft: rgba(18, 38, 51, 0.06);
-    --palette-surface-hover: rgba(18, 38, 51, 0.1);
-    --palette-text: #10202b;
-    --palette-text-muted: #5f7281;
-    --palette-line: rgba(18, 38, 51, 0.12);
-    --palette-line-strong: rgba(18, 38, 51, 0.22);
-    --palette-brand: #38d9a9;
-    --palette-brand-soft: rgba(56, 217, 169, 0.16);
-    --palette-brand-line: rgba(56, 217, 169, 0.62);
-    --palette-on-brand: #061116;
-    --palette-gold: #ffd166;
-    --palette-gold-soft: rgba(255, 209, 102, 0.2);
-    --palette-gold-line: rgba(255, 209, 102, 0.74);
-    --palette-blue: #74c0fc;
-    --palette-blue-soft: rgba(116, 192, 252, 0.16);
-    --palette-blue-line: rgba(116, 192, 252, 0.72);
-    --palette-danger: #ff6b6b;
-    --palette-danger-strong: #b32121;
-    --palette-shadow: rgba(22, 59, 78, 0.14);
-    --palette-hero-panel: rgba(255, 255, 255, 0.76);
+    --palette-surface-soft: rgba(7, 20, 30, 0.055);
+    --palette-surface-hover: rgba(7, 20, 30, 0.1);
+    --palette-text: #001e2b;
+    --palette-text-muted: #4f5f68;
+    --palette-line: rgba(7, 20, 30, 0.12);
+    --palette-line-strong: rgba(7, 20, 30, 0.24);
+    --palette-brand: #00a651;
+    --palette-brand-soft: rgba(0, 166, 81, 0.15);
+    --palette-brand-line: rgba(0, 166, 81, 0.6);
+    --palette-on-brand: #ffffff;
+    --palette-gold: #ffcc00;
+    --palette-gold-soft: rgba(255, 204, 0, 0.2);
+    --palette-gold-line: rgba(255, 204, 0, 0.72);
+    --palette-blue: #0068ff;
+    --palette-blue-soft: rgba(0, 104, 255, 0.14);
+    --palette-blue-line: rgba(0, 104, 255, 0.62);
+    --palette-danger: #e52620;
+    --palette-danger-strong: #a11612;
+    --palette-shadow: rgba(0, 24, 36, 0.16);
+    --palette-hero-panel: rgba(255, 255, 255, 0.84);
     --palette-mask: #000000;
 
     /* Shared knockout-board palette. */
-    --palette-ko-board-line: rgba(255, 255, 255, 0.14);
-    --palette-ko-board-grid-x: rgba(56, 217, 169, 0.16);
-    --palette-ko-board-grid-y: rgba(255, 255, 255, 0.06);
-    --palette-ko-bg-side: rgba(6, 12, 18, 0.78);
-    --palette-ko-bg-center: rgba(98, 18, 41, 0.78);
-    --palette-ko-bg-top: #260e18;
-    --palette-ko-bg-mid: #4a1427;
-    --palette-ko-bg-bottom: #170d16;
-    --palette-ko-card: rgba(12, 13, 20, 0.72);
-    --palette-ko-team: #171822;
+    --palette-ko-board-line: rgba(255, 255, 255, 0.16);
+    --palette-ko-board-grid-x: rgba(0, 166, 81, 0.16);
+    --palette-ko-board-grid-y: rgba(255, 255, 255, 0.07);
+    --palette-ko-bg-side: rgba(0, 17, 23, 0.86);
+    --palette-ko-bg-center: rgba(0, 45, 36, 0.82);
+    --palette-ko-bg-top: #001117;
+    --palette-ko-bg-mid: #051922;
+    --palette-ko-bg-bottom: #001117;
+    --palette-ko-card: rgba(16, 25, 34, 0.78);
+    --palette-ko-team: #071f2b;
     --palette-ko-text: #f6fbff;
-    --palette-ko-muted: rgba(246, 251, 255, 0.68);
-    --palette-ko-hot: #ff3d6e;
-    --palette-ko-hot-soft: rgba(255, 61, 110, 0.22);
-    --palette-ko-hot-line: rgba(255, 61, 110, 0.65);
+    --palette-ko-muted: rgba(246, 251, 255, 0.7);
+    --palette-ko-hot: #e52620;
+    --palette-ko-hot-soft: rgba(229, 38, 32, 0.22);
+    --palette-ko-hot-line: rgba(229, 38, 32, 0.66);
 
     /* Semantic app tokens: components should use these. */
     --bg: var(--palette-bg);
@@ -75,17 +75,24 @@
     color-scheme: dark;
 
     /* Palette: edit these dark-theme tokens to recolor the app. */
-    --palette-bg: #071018;
-    --palette-surface: #101c26;
-    --palette-surface-strong: #162735;
-    --palette-surface-soft: rgba(255, 255, 255, 0.08);
+    --palette-bg: #001117;
+    --palette-surface: #101922;
+    --palette-surface-strong: #16242f;
+    --palette-surface-soft: rgba(255, 255, 255, 0.075);
     --palette-surface-hover: rgba(255, 255, 255, 0.12);
-    --palette-text: #f6fbff;
-    --palette-text-muted: #a8b9c9;
-    --palette-line: rgba(255, 255, 255, 0.12);
-    --palette-line-strong: rgba(255, 255, 255, 0.22);
-    --palette-hero-panel: rgba(16, 28, 38, 0.88);
-    --palette-shadow: rgba(0, 0, 0, 0.28);
+    --palette-text: #f7f7f7;
+    --palette-text-muted: #a8b0b7;
+    --palette-line: rgba(255, 255, 255, 0.13);
+    --palette-line-strong: rgba(255, 255, 255, 0.24);
+    --palette-brand-soft: rgba(0, 166, 81, 0.2);
+    --palette-brand-line: rgba(0, 166, 81, 0.7);
+    --palette-on-brand: #001117;
+    --palette-gold-soft: rgba(255, 204, 0, 0.22);
+    --palette-blue-soft: rgba(0, 104, 255, 0.2);
+    --palette-danger: #ff310a;
+    --palette-danger-strong: #c51f08;
+    --palette-hero-panel: rgba(16, 25, 34, 0.9);
+    --palette-shadow: rgba(0, 0, 0, 0.34);
 }
 
 * {
