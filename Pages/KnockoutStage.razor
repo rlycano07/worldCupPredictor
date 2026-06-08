@@ -14,15 +14,17 @@
     </div>
 </section>
 
-@if (Champion is not null)
+@if (Champion is not null && !IsChampionPopupDismissed)
 {
-    <ChampionCard Champion="Champion" OnStartAgain="StartAgain" OnEditGroups="EditGroups" OnShare="SharePrediction" />
+    <ChampionCard Champion="Champion" OnStartAgain="StartAgain" OnEditGroups="EditGroups" OnShare="SharePrediction" OnClose="DismissChampionPopup" />
 }
 
 <KnockoutBracket Rounds="Rounds" />
 
 @code {
     private List<KnockoutRound> Rounds { get; set; } = [];
+    private bool IsChampionPopupDismissed { get; set; }
+    private string? LastChampionId { get; set; }
     private Team? Champion => PredictionState.GetChampion();
 
     protected override async Task OnInitializedAsync()
@@ -42,7 +44,18 @@
     private void RefreshBracket()
     {
         Rounds = PredictionState.GetBracket();
+        UpdateChampionPopupState();
         StateHasChanged();
+    }
+
+    private void UpdateChampionPopupState()
+    {
+        var championId = Champion?.Id;
+        if (championId != LastChampionId)
+        {
+            LastChampionId = championId;
+            IsChampionPopupDismissed = championId is null;
+        }
     }
 
     private async Task StartAgain()
@@ -52,6 +65,8 @@
     }
 
     private void EditGroups() => Navigation.NavigateTo("/groups");
+
+    private void DismissChampionPopup() => IsChampionPopupDismissed = true;
 
     private async Task SharePrediction()
     {

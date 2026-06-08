@@ -1,19 +1,24 @@
-<section class="champion-card" aria-live="polite">
-    <div class="trophy" aria-hidden="true">🏆</div>
-    <div>
-        <p class="eyebrow">Champion</p>
-        <h2>@Champion.Name</h2>
-    </div>
-    <div class="champion-actions">
-        <button class="secondary-action" @onclick="OnStartAgain">Start Again</button>
-        <button class="secondary-action" @onclick="OnEditGroups">Edit Group Stage</button>
-        <button class="primary-action" @onclick="OnShare">Share Prediction</button>
-    </div>
-</section>
+<div class="champion-popup-backdrop" role="presentation">
+    <section class="champion-popup" role="dialog" aria-modal="true" aria-labelledby="champion-title" aria-live="polite">
+        <button class="champion-close" type="button" @onclick="OnClose" aria-label="Close champion popup">x</button>
+        <img class="champion-trophy" src="images/world-cup-trophy.svg" alt="" aria-hidden="true" />
+        <div class="champion-copy">
+            <p class="eyebrow">Champion</p>
+            <h2 id="champion-title">@Champion.Name</h2>
+            <p>@Champion.Name wins your World Cup prediction.</p>
+        </div>
+        <div class="champion-actions">
+            <button class="secondary-action" @onclick="OnStartAgain">Start Again</button>
+            <button class="secondary-action" @onclick="OnEditGroups">Edit Group Stage</button>
+            <button class="primary-action" @onclick="OnShare">Share Prediction</button>
+        </div>
+    </section>
+</div>
 
 @code {
     [Parameter, EditorRequired] public Team Champion { get; set; } = default!;
     [Parameter] public EventCallback OnStartAgain { get; set; }
     [Parameter] public EventCallback OnEditGroups { get; set; }
     [Parameter] public EventCallback OnShare { get; set; }
+    [Parameter] public EventCallback OnClose { get; set; }
 }

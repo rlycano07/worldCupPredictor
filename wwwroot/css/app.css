@@ -387,8 +387,7 @@ main {
 }
 
 .group-card,
-.matchup-card,
-.champion-card {
+.matchup-card {
     border: 1px solid var(--line);
     border-radius: 0.5rem;
     background: var(--panel);
@@ -408,8 +407,7 @@ main {
 }
 
 .group-card h2,
-.round-column h2,
-.champion-card h2 {
+.round-column h2 {
     margin: 0;
     font-size: 1.1rem;
 }
@@ -807,24 +805,75 @@ main {
     text-transform: uppercase;
 }
 
-.champion-card {
+.champion-popup-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
     display: grid;
-    grid-template-columns: auto minmax(0, 1fr) auto;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1rem;
+    place-items: center;
     padding: 1rem;
-    background: linear-gradient(135deg, var(--gold-soft), var(--panel));
+    background: color-mix(in srgb, var(--palette-mask), transparent 34%);
+    backdrop-filter: blur(10px);
 }
 
-.trophy {
-    font-size: 3rem;
+.champion-popup {
+    position: relative;
+    display: grid;
+    width: min(32rem, 100%);
+    justify-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    text-align: center;
+    border: 1px solid var(--gold-line);
+    border-radius: 0.5rem;
+    background: linear-gradient(135deg, var(--gold-soft), var(--panel));
+    box-shadow: 0 28px 80px color-mix(in srgb, black, transparent 58%);
+}
+
+.champion-close {
+    position: absolute;
+    top: 0.6rem;
+    right: 0.6rem;
+    display: grid;
+    width: 2rem;
+    height: 2rem;
+    place-items: center;
+    color: var(--muted);
+    font-size: 1.3rem;
+    line-height: 1;
+    border: 1px solid var(--line);
+    border-radius: 0.4rem;
+    background: var(--surface-subtle);
+}
+
+.champion-close:hover {
+    color: var(--text);
+    background: var(--surface-hover);
+}
+
+.champion-trophy {
+    width: 7rem;
+    height: 7rem;
+    object-fit: cover;
+    border-radius: 999px;
+    box-shadow: 0 0 0 4px var(--gold-soft);
+}
+
+.champion-copy h2 {
+    margin: 0;
+    font-size: clamp(2rem, 8vw, 3.4rem);
+    line-height: 1;
+}
+
+.champion-copy p:not(.eyebrow) {
+    margin: 0.65rem 0 0;
+    color: var(--muted);
 }
 
 .champion-actions {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
     gap: 0.65rem;
 }
 
@@ -1018,10 +1067,6 @@ main {
 
     .ko-right {
         order: 3;
-    }
-
-    .champion-card {
-        grid-template-columns: 1fr;
     }
 
     .champion-actions {
