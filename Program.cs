@@ -11,5 +11,6 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.
 builder.Services.AddScoped<LocalStorageService>();
 builder.Services.AddScoped<BracketGenerator>();
 builder.Services.AddScoped<PredictionStateService>();
+builder.Services.AddScoped<ThemeService>();
 
 await builder.Build().RunAsync();

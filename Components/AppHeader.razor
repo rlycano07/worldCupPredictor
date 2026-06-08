@@ -1,16 +1,24 @@
 @inject NavigationManager Navigation
+@inject ThemeService Theme
 
 <header class="app-header">
     <button class="brand-button" @onclick="GoHome" aria-label="World Cup Predictor home">
         <span class="brand-mark" aria-hidden="true">W</span>
         <span>World Cup Predictor</span>
     </button>
-    <nav aria-label="Prediction steps">
-        <a href="/groups">Groups</a>
-        <a href="/knockout">Bracket</a>
-    </nav>
+    <div class="header-actions">
+        <nav aria-label="Prediction steps">
+            <a href="/groups">Groups</a>
+            <a href="/knockout">Bracket</a>
+        </nav>
+        <button class="theme-toggle" type="button" @onclick="Theme.ToggleAsync" aria-label="@ThemeLabel">
+            <span aria-hidden="true">@(Theme.IsDark ? "☀" : "☾")</span>
+            <span>@(Theme.IsDark ? "Light" : "Dark")</span>
+        </button>
+    </div>
 </header>
 
 @code {
     private void GoHome() => Navigation.NavigateTo("/");
+    private string ThemeLabel => Theme.IsDark ? "Switch to light theme" : "Switch to dark theme";
 }

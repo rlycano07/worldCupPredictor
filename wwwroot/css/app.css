@@ -1,17 +1,91 @@
 :root {
-    color-scheme: dark;
-    --bg: #071018;
-    --panel: #101c26;
-    --panel-strong: #162735;
-    --line: rgba(255, 255, 255, 0.12);
-    --line-strong: rgba(255, 255, 255, 0.22);
-    --text: #f6fbff;
-    --muted: #a8b9c9;
-    --accent: #38d9a9;
-    --gold: #ffd166;
-    --danger: #ff6b6b;
-    --shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+    color-scheme: light;
+
+    /* Palette: edit these light-theme tokens to recolor the app. */
+    --palette-bg: #f4fbf8;
+    --palette-surface: rgba(255, 255, 255, 0.92);
+    --palette-surface-strong: #ffffff;
+    --palette-surface-soft: rgba(18, 38, 51, 0.06);
+    --palette-surface-hover: rgba(18, 38, 51, 0.1);
+    --palette-text: #10202b;
+    --palette-text-muted: #5f7281;
+    --palette-line: rgba(18, 38, 51, 0.12);
+    --palette-line-strong: rgba(18, 38, 51, 0.22);
+    --palette-brand: #38d9a9;
+    --palette-brand-soft: rgba(56, 217, 169, 0.16);
+    --palette-brand-line: rgba(56, 217, 169, 0.62);
+    --palette-on-brand: #061116;
+    --palette-gold: #ffd166;
+    --palette-gold-soft: rgba(255, 209, 102, 0.2);
+    --palette-gold-line: rgba(255, 209, 102, 0.74);
+    --palette-blue: #74c0fc;
+    --palette-blue-soft: rgba(116, 192, 252, 0.16);
+    --palette-blue-line: rgba(116, 192, 252, 0.72);
+    --palette-danger: #ff6b6b;
+    --palette-danger-strong: #b32121;
+    --palette-shadow: rgba(22, 59, 78, 0.14);
+    --palette-hero-panel: rgba(255, 255, 255, 0.76);
+    --palette-mask: #000000;
+
+    /* Shared knockout-board palette. */
+    --palette-ko-board-line: rgba(255, 255, 255, 0.14);
+    --palette-ko-board-grid-x: rgba(56, 217, 169, 0.16);
+    --palette-ko-board-grid-y: rgba(255, 255, 255, 0.06);
+    --palette-ko-bg-side: rgba(6, 12, 18, 0.78);
+    --palette-ko-bg-center: rgba(98, 18, 41, 0.78);
+    --palette-ko-bg-top: #260e18;
+    --palette-ko-bg-mid: #4a1427;
+    --palette-ko-bg-bottom: #170d16;
+    --palette-ko-card: rgba(12, 13, 20, 0.72);
+    --palette-ko-team: #171822;
+    --palette-ko-text: #f6fbff;
+    --palette-ko-muted: rgba(246, 251, 255, 0.68);
+    --palette-ko-hot: #ff3d6e;
+    --palette-ko-hot-soft: rgba(255, 61, 110, 0.22);
+    --palette-ko-hot-line: rgba(255, 61, 110, 0.65);
+
+    /* Semantic app tokens: components should use these. */
+    --bg: var(--palette-bg);
+    --panel: var(--palette-surface);
+    --panel-strong: var(--palette-surface-strong);
+    --line: var(--palette-line);
+    --line-strong: var(--palette-line-strong);
+    --text: var(--palette-text);
+    --muted: var(--palette-text-muted);
+    --accent: var(--palette-brand);
+    --accent-soft: var(--palette-brand-soft);
+    --accent-line: var(--palette-brand-line);
+    --gold: var(--palette-gold);
+    --gold-soft: var(--palette-gold-soft);
+    --gold-line: var(--palette-gold-line);
+    --blue: var(--palette-blue);
+    --blue-soft: var(--palette-blue-soft);
+    --blue-line: var(--palette-blue-line);
+    --danger: var(--palette-danger);
+    --danger-strong: var(--palette-danger-strong);
+    --on-accent: var(--palette-on-brand);
+    --surface-subtle: var(--palette-surface-soft);
+    --surface-hover: var(--palette-surface-hover);
+    --hero-panel: var(--palette-hero-panel);
+    --shadow: 0 18px 50px var(--palette-shadow);
     font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+
+    /* Palette: edit these dark-theme tokens to recolor the app. */
+    --palette-bg: #071018;
+    --palette-surface: #101c26;
+    --palette-surface-strong: #162735;
+    --palette-surface-soft: rgba(255, 255, 255, 0.08);
+    --palette-surface-hover: rgba(255, 255, 255, 0.12);
+    --palette-text: #f6fbff;
+    --palette-text-muted: #a8b9c9;
+    --palette-line: rgba(255, 255, 255, 0.12);
+    --palette-line-strong: rgba(255, 255, 255, 0.22);
+    --palette-hero-panel: rgba(16, 28, 38, 0.88);
+    --palette-shadow: rgba(0, 0, 0, 0.28);
 }
 
 * {
@@ -27,8 +101,8 @@ body {
     margin: 0;
     color: var(--text);
     background:
-        radial-gradient(circle at top left, rgba(56, 217, 169, 0.18), transparent 30rem),
-        linear-gradient(135deg, #071018 0%, #0e1822 45%, #0a1017 100%);
+        radial-gradient(circle at top left, var(--accent-soft), transparent 30rem),
+        linear-gradient(135deg, var(--bg) 0%, var(--bg) 45%, color-mix(in srgb, var(--bg), var(--accent) 7%) 100%);
 }
 
 button,
@@ -87,9 +161,9 @@ a {
     height: 2.5rem;
     place-items: center;
     border-radius: 0.5rem;
-    color: #061116;
+    color: var(--on-accent);
     background: var(--accent);
-    box-shadow: 0 0 0 4px rgba(56, 217, 169, 0.12);
+    box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .app-header nav a {
@@ -102,7 +176,30 @@ a {
 
 .app-header nav a:hover {
     color: var(--text);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-subtle);
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.theme-toggle {
+    display: inline-flex;
+    min-height: 2.5rem;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0 0.8rem;
+    color: var(--text);
+    font-weight: 800;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--surface-subtle);
+}
+
+.theme-toggle:hover {
+    background: var(--surface-hover);
 }
 
 main {
@@ -144,24 +241,28 @@ main {
     position: relative;
     display: grid;
     min-height: 32rem;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: minmax(0, 1fr) auto;
     gap: 1rem;
-    align-content: end;
     padding: 1.25rem;
     overflow: hidden;
     border: 1px solid var(--line);
     border-radius: 0.5rem;
-    background:
-        linear-gradient(90deg, transparent 49%, rgba(255, 255, 255, 0.14) 50%, transparent 51%),
-        linear-gradient(160deg, rgba(32, 201, 151, 0.24), rgba(16, 28, 38, 0.95));
+    background: var(--hero-panel);
     box-shadow: var(--shadow);
 }
 
-.pitch-line {
-    position: absolute;
-    inset: 2rem;
-    border: 2px solid rgba(255, 255, 255, 0.22);
-    border-radius: 0.5rem;
+.world-cup-art {
+    width: 100%;
+    min-height: 0;
+    max-height: 27rem;
+    align-self: center;
+    object-fit: contain;
+}
+
+.hero-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
 }
 
 .hero-score {
@@ -169,7 +270,7 @@ main {
     padding: 1rem;
     border: 1px solid var(--line);
     border-radius: 0.5rem;
-    background: rgba(7, 16, 24, 0.72);
+    background: var(--surface-subtle);
 }
 
 .hero-score span {
@@ -195,7 +296,7 @@ main {
 
 .primary-action {
     padding: 0 1.25rem;
-    color: #061116;
+    color: var(--on-accent);
     background: var(--accent);
 }
 
@@ -213,7 +314,7 @@ main {
 .secondary-action,
 .ghost-action {
     color: var(--text);
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-subtle);
     border: 1px solid var(--line);
 }
 
@@ -257,9 +358,9 @@ main {
     color: var(--text);
     font-size: 0.82rem;
     font-weight: 900;
-    border: 1px solid rgba(116, 192, 252, 0.42);
+    border: 1px solid var(--blue-line);
     border-radius: 0.5rem;
-    background: rgba(116, 192, 252, 0.12);
+    background: var(--blue-soft);
 }
 
 .validation-note {
@@ -277,8 +378,8 @@ main {
 .champion-card {
     border: 1px solid var(--line);
     border-radius: 0.5rem;
-    background: rgba(16, 28, 38, 0.88);
-    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.16);
+    background: var(--panel);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--palette-shadow), transparent 25%);
 }
 
 .group-card {
@@ -331,36 +432,36 @@ main {
 }
 
 .team-card.qualified {
-    border-color: rgba(56, 217, 169, 0.62);
+    border-color: var(--accent-line);
     background:
-        linear-gradient(90deg, rgba(56, 217, 169, 0.16), transparent 45%),
+        linear-gradient(90deg, var(--accent-soft), transparent 45%),
         var(--panel-strong);
-    box-shadow: inset 4px 0 0 var(--accent), 0 0 0 1px rgba(56, 217, 169, 0.08);
+    box-shadow: inset 4px 0 0 var(--accent), 0 0 0 1px color-mix(in srgb, var(--accent), transparent 88%);
 }
 
 .team-card.first-place {
-    border-color: rgba(255, 209, 102, 0.74);
+    border-color: var(--gold-line);
     background:
-        linear-gradient(90deg, rgba(255, 209, 102, 0.2), transparent 48%),
+        linear-gradient(90deg, var(--gold-soft), transparent 48%),
         var(--panel-strong);
-    box-shadow: inset 4px 0 0 var(--gold), 0 0 0 1px rgba(255, 209, 102, 0.1);
+    box-shadow: inset 4px 0 0 var(--gold), 0 0 0 1px color-mix(in srgb, var(--gold), transparent 86%);
 }
 
 .team-card.second-place {
-    border-color: rgba(56, 217, 169, 0.62);
+    border-color: var(--accent-line);
 }
 
 .team-card.best-third {
-    border-color: rgba(116, 192, 252, 0.72);
+    border-color: var(--blue-line);
     background:
-        linear-gradient(90deg, rgba(116, 192, 252, 0.18), transparent 48%),
+        linear-gradient(90deg, var(--blue-soft), transparent 48%),
         var(--panel-strong);
-    box-shadow: inset 4px 0 0 #74c0fc, 0 0 0 1px rgba(116, 192, 252, 0.1);
+    box-shadow: inset 4px 0 0 var(--blue), 0 0 0 1px color-mix(in srgb, var(--blue), transparent 86%);
 }
 
 .draggable-row:hover .team-card {
     border-color: var(--line-strong);
-    background: #1c3345;
+    background: color-mix(in srgb, var(--panel-strong), var(--accent) 10%);
 }
 
 .team-position {
@@ -368,7 +469,7 @@ main {
     width: 1.75rem;
     height: 1.75rem;
     place-items: center;
-    color: #061116;
+    color: var(--on-accent);
     font-weight: 900;
     border-radius: 0.4rem;
     background: var(--gold);
@@ -378,9 +479,9 @@ main {
     width: 2.2rem;
     height: 1.55rem;
     object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.12);
+    border: 1px solid var(--line);
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-subtle);
 }
 
 .team-name {
@@ -393,13 +494,13 @@ main {
     justify-self: end;
     min-width: 3.9rem;
     padding: 0.25rem 0.35rem;
-    color: #061116;
+    color: var(--on-accent);
     font-size: 0.68rem;
     font-weight: 950;
     text-align: center;
     border-radius: 999px;
     background: var(--accent);
-    box-shadow: 0 0 18px rgba(56, 217, 169, 0.24);
+    box-shadow: 0 0 18px var(--accent-soft);
 }
 
 .team-card.first-place .qualification-badge {
@@ -407,8 +508,8 @@ main {
 }
 
 .team-card.best-third .qualification-badge {
-    color: #061116;
-    background: #74c0fc;
+    color: var(--on-accent);
+    background: var(--blue);
 }
 
 .qualification-badge.empty {
@@ -423,20 +524,20 @@ main {
     font-weight: 900;
     border: 1px solid var(--line);
     border-radius: 0.4rem;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--surface-subtle);
     transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
 }
 
 .best-third-action:hover {
     color: var(--text);
-    border-color: rgba(116, 192, 252, 0.74);
-    background: rgba(116, 192, 252, 0.16);
+    border-color: var(--blue-line);
+    background: var(--blue-soft);
 }
 
 .best-third-action.selected {
-    color: #061116;
+    color: var(--on-accent);
     border-color: transparent;
-    background: #74c0fc;
+    background: var(--blue);
 }
 
 .ko-board {
@@ -444,11 +545,11 @@ main {
     min-width: 72rem;
     overflow: hidden;
     padding: 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid var(--palette-ko-board-line);
     border-radius: 0.5rem;
     background:
-        linear-gradient(90deg, rgba(6, 12, 18, 0.78), rgba(98, 18, 41, 0.78) 50%, rgba(6, 12, 18, 0.78)),
-        linear-gradient(180deg, #260e18 0%, #4a1427 42%, #170d16 100%);
+        linear-gradient(90deg, var(--palette-ko-bg-side), var(--palette-ko-bg-center) 50%, var(--palette-ko-bg-side)),
+        linear-gradient(180deg, var(--palette-ko-bg-top) 0%, var(--palette-ko-bg-mid) 42%, var(--palette-ko-bg-bottom) 100%);
     box-shadow: var(--shadow);
 }
 
@@ -458,10 +559,10 @@ main {
     inset: 0;
     pointer-events: none;
     background:
-        linear-gradient(90deg, rgba(56, 217, 169, 0.16) 1px, transparent 1px),
-        linear-gradient(180deg, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+        linear-gradient(90deg, var(--palette-ko-board-grid-x) 1px, transparent 1px),
+        linear-gradient(180deg, var(--palette-ko-board-grid-y) 1px, transparent 1px);
     background-size: 7rem 100%, 100% 4.5rem;
-    mask-image: linear-gradient(90deg, transparent, #000 18%, #000 82%, transparent);
+    mask-image: linear-gradient(90deg, transparent, var(--palette-mask) 18%, var(--palette-mask) 82%, transparent);
 }
 
 .ko-board-topline {
@@ -477,8 +578,8 @@ main {
     width: 0.35rem;
     height: 0.35rem;
     border-radius: 999px;
-    background: #ff3d6e;
-    box-shadow: 0 0 1rem rgba(255, 61, 110, 0.8);
+    background: var(--palette-ko-hot);
+    box-shadow: 0 0 1rem color-mix(in srgb, var(--palette-ko-hot), transparent 20%);
 }
 
 .ko-board-title {
@@ -524,7 +625,7 @@ main {
 
 .round-lane h3 {
     margin: 0;
-    color: rgba(246, 251, 255, 0.68);
+    color: var(--palette-ko-muted);
     font-size: 0.72rem;
     font-weight: 800;
     text-align: center;
@@ -561,10 +662,10 @@ main {
     align-self: center;
     min-height: 5.1rem;
     padding: 0.35rem;
-    border: 1px solid rgba(255, 255, 255, 0.13);
+    border: 1px solid var(--palette-ko-board-line);
     border-radius: 0.35rem;
-    background: rgba(12, 13, 20, 0.72);
-    box-shadow: 0 10px 26px rgba(0, 0, 0, 0.26);
+    background: var(--palette-ko-card);
+    box-shadow: 0 10px 26px color-mix(in srgb, black, transparent 74%);
 }
 
 .matchup-card.incomplete {
@@ -575,12 +676,12 @@ main {
     display: grid;
     min-height: 1.15rem;
     place-items: center;
-    color: rgba(255, 255, 255, 0.72);
+    color: var(--palette-ko-muted);
     font-size: 0.68rem;
     font-weight: 900;
     text-align: center;
     border-radius: 0.25rem;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--palette-surface-soft);
 }
 
 .matchup-team {
@@ -591,17 +692,17 @@ main {
     min-height: 1.75rem;
     width: 100%;
     padding: 0 0.45rem;
-    color: var(--text);
+    color: var(--palette-ko-text);
     text-align: left;
     border: 1px solid transparent;
     border-radius: 0.28rem;
-    background: #171822;
+    background: var(--palette-ko-team);
     transition: border-color 160ms ease, background 160ms ease, color 160ms ease, transform 160ms ease;
 }
 
 .matchup-team:hover:not(:disabled) {
     border-color: var(--accent);
-    background: rgba(56, 217, 169, 0.16);
+    background: var(--accent-soft);
     transform: translateY(-1px);
 }
 
@@ -610,7 +711,7 @@ main {
 }
 
 .matchup-team.selected {
-    color: #051015;
+    color: var(--on-accent);
     background: var(--accent);
     border-color: transparent;
     font-weight: 900;
@@ -624,9 +725,9 @@ main {
     width: 1.55rem;
     height: 1.05rem;
     object-fit: cover;
-    border: 1px solid rgba(255, 255, 255, 0.18);
+    border: 1px solid var(--palette-ko-board-line);
     border-radius: 0.15rem;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--palette-surface-soft);
 }
 
 .match-team-code {
@@ -641,7 +742,7 @@ main {
 
 .team-placeholder {
     grid-column: 1 / -1;
-    color: rgba(255, 255, 255, 0.54);
+    color: var(--palette-ko-muted);
     font-size: 0.72rem;
     font-weight: 800;
     text-align: center;
@@ -654,7 +755,7 @@ main {
     justify-items: center;
     align-self: stretch;
     padding: 1rem 0.65rem;
-    border-inline: 1px solid rgba(255, 255, 255, 0.12);
+    border-inline: 1px solid var(--palette-ko-board-line);
 }
 
 .round-kicker {
@@ -672,21 +773,21 @@ main {
     align-self: end;
     place-items: center;
     font-size: 3.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.14);
+    border: 1px solid var(--palette-ko-board-line);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--palette-surface-soft);
 }
 
 .final-matchup {
     align-self: center;
     width: min(100%, 18rem);
-    border-color: rgba(255, 61, 110, 0.65);
-    box-shadow: 0 0 0 1px rgba(255, 61, 110, 0.22), 0 18px 40px rgba(0, 0, 0, 0.32);
+    border-color: var(--palette-ko-hot-line);
+    box-shadow: 0 0 0 1px var(--palette-ko-hot-soft), 0 18px 40px color-mix(in srgb, black, transparent 68%);
 }
 
 .third-place-marker {
     align-self: start;
-    color: rgba(255, 255, 255, 0.52);
+    color: var(--palette-ko-muted);
     font-size: 0.7rem;
     font-weight: 800;
     text-align: center;
@@ -700,7 +801,7 @@ main {
     gap: 1rem;
     margin-bottom: 1rem;
     padding: 1rem;
-    background: linear-gradient(135deg, rgba(255, 209, 102, 0.18), rgba(16, 28, 38, 0.92));
+    background: linear-gradient(135deg, var(--gold-soft), var(--panel));
 }
 
 .trophy {
@@ -722,9 +823,9 @@ main {
     z-index: 1000;
     max-width: 34rem;
     padding: 1rem 3rem 1rem 1rem;
-    color: #fff;
+    color: white;
     border-radius: 0.5rem;
-    background: #b32121;
+    background: var(--danger-strong);
     box-shadow: var(--shadow);
 }
 
@@ -746,7 +847,7 @@ main {
 
 .loading-progress circle {
     fill: none;
-    stroke: rgba(255, 255, 255, 0.15);
+    stroke: var(--line);
     stroke-width: 0.6rem;
     transform: rotate(-90deg);
     transform-origin: 50% 50%;
@@ -784,6 +885,10 @@ main {
         overflow-x: auto;
     }
 
+    .header-actions {
+        justify-content: space-between;
+    }
+
     .hero {
         min-height: auto;
         grid-template-columns: 1fr;
@@ -792,6 +897,10 @@ main {
 
     .hero-board {
         min-height: 18rem;
+    }
+
+    .hero-stats {
+        grid-template-columns: 1fr;
     }
 
     .page-heading {
@@ -880,7 +989,7 @@ main {
 
     .final-hub {
         order: 2;
-        border: 1px solid rgba(255, 255, 255, 0.12);
+        border: 1px solid var(--palette-ko-board-line);
         border-radius: 0.5rem;
     }
 

@@ -1,0 +1,48 @@
+<svg width="760" height="620" viewBox="0 0 760 620" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">World Cup trophy illustration</title>
+  <desc id="desc">A stylized football world cup trophy with a globe, flowing gold ribbons, and a green pitch base.</desc>
+  <defs>
+    <linearGradient id="gold" x1="242" y1="90" x2="528" y2="528" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF2A8"/>
+      <stop offset=".25" stop-color="#FFD166"/>
+      <stop offset=".62" stop-color="#E2A928"/>
+      <stop offset="1" stop-color="#A86D12"/>
+    </linearGradient>
+    <linearGradient id="green" x1="198" y1="416" x2="562" y2="584" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#38D9A9"/>
+      <stop offset="1" stop-color="#157F62"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="284" y1="116" x2="472" y2="294" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#74C0FC"/>
+      <stop offset="1" stop-color="#1C7ED6"/>
+    </linearGradient>
+    <filter id="shadow" x="96" y="54" width="568" height="552" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="28" stdDeviation="28" flood-color="#071018" flood-opacity=".24"/>
+    </filter>
+  </defs>
+  <rect x="18" y="18" width="724" height="584" rx="34" fill="#F4FBF8"/>
+  <path d="M104 508c98-42 180-44 268-4 96 43 181 44 284-5" stroke="#D7F5E9" stroke-width="28" stroke-linecap="round"/>
+  <path d="M82 450c116-50 209-51 298-3 93 49 192 46 300-7" stroke="#E8F8F1" stroke-width="18" stroke-linecap="round"/>
+  <g filter="url(#shadow)">
+    <path d="M278 502h204l38 60H240l38-60Z" fill="url(#green)"/>
+    <path d="M303 454h154l25 48H278l25-48Z" fill="url(#gold)"/>
+    <path d="M326 300c-10 70-32 116-67 154h242c-39-43-58-90-67-154H326Z" fill="url(#gold)"/>
+    <path d="M244 136c-38 14-67 47-75 88-7 37 6 78 35 108 24 24 55 36 91 34-18-24-29-54-31-90-31-3-52-19-61-45-9-25-2-48 15-64 11-11 24-17 42-20l-16-11Z" fill="url(#gold)"/>
+    <path d="M516 136c38 14 67 47 75 88 7 37-6 78-35 108-24 24-55 36-91 34 18-24 29-54 31-90 31-3 52-19 61-45 9-25 2-48-15-64-11-11-24-17-42-20l16-11Z" fill="url(#gold)"/>
+    <path d="M276 116c8-24 45-48 104-48s96 24 104 48c13 41 4 113-30 160-21 29-46 44-74 44s-53-15-74-44c-34-47-43-119-30-160Z" fill="url(#gold)"/>
+    <circle cx="380" cy="178" r="86" fill="url(#blue)"/>
+    <path d="M317 128c26 10 49 10 74 0 28-11 54-8 75 7" stroke="#DFF5FF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M303 178c48 18 104 18 154 0" stroke="#DFF5FF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M330 238c33-14 67-14 100 0" stroke="#DFF5FF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M380 92c-26 53-26 115 0 172" stroke="#DFF5FF" stroke-width="10" stroke-linecap="round"/>
+    <path d="M333 104c22 50 22 102 0 149" stroke="#DFF5FF" stroke-width="8" stroke-linecap="round" opacity=".85"/>
+    <path d="M427 104c-22 50-22 102 0 149" stroke="#DFF5FF" stroke-width="8" stroke-linecap="round" opacity=".85"/>
+    <path d="M310 296c45 44 97 44 140 0 1 72 14 124 51 158H259c38-35 51-87 51-158Z" fill="url(#gold)"/>
+    <path d="M312 348c42 27 93 27 136 0" stroke="#FFE9A1" stroke-width="12" stroke-linecap="round" opacity=".62"/>
+  </g>
+  <path d="M152 101h92M516 101h92M120 162h56M584 162h56" stroke="#38D9A9" stroke-width="12" stroke-linecap="round"/>
+  <circle cx="146" cy="298" r="10" fill="#FFD166"/>
+  <circle cx="614" cy="298" r="10" fill="#FFD166"/>
+  <circle cx="182" cy="344" r="7" fill="#38D9A9"/>
+  <circle cx="578" cy="344" r="7" fill="#38D9A9"/>
+</svg>

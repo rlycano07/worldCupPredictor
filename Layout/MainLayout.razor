@@ -1,5 +1,6 @@
 @inherits LayoutComponentBase
 @inject PredictionStateService PredictionState
+@inject ThemeService Theme
 
 <div class="app-shell">
     <AppHeader />
@@ -12,5 +13,6 @@
     protected override async Task OnInitializedAsync()
     {
         await PredictionState.InitializeAsync();
+        await Theme.InitializeAsync();
     }
 }
