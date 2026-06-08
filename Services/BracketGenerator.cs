@@ -4,6 +4,8 @@ namespace WorldCupPredict.Services;
 
 public sealed class BracketGenerator
 {
+    public const int RequiredBestThirdCount = 8;
+
     private static readonly (string Id, string Name, int MatchupCount)[] RoundDefinitions =
     [
         ("r32", "Round of 32", 16),
@@ -154,10 +156,13 @@ public sealed class BracketGenerator
         var bestThirdSlots = TournamentData.RoundOf32Mapping
             .SelectMany(mapping => new[] { mapping.SlotA, mapping.SlotB })
             .Where(slot => slot.IsBestThirdSlot);
+        var selectedGroupPriority = state.BestThirdSelectionInitialized
+            ? state.BestThirdGroupIds
+            : TournamentData.BestThirdPlaceGroupPriority;
 
         foreach (var slot in bestThirdSlots)
         {
-            var selectedGroup = TournamentData.BestThirdPlaceGroupPriority
+            var selectedGroup = selectedGroupPriority
                 .Where(groupId => slot.EligibleThirdPlaceGroups.Contains(groupId))
                 .FirstOrDefault(groupId => !usedGroups.Contains(groupId) && ResolveRankedTeam(state, groupId, 3) is not null);
 
@@ -178,6 +183,20 @@ public sealed class BracketGenerator
 
         return assignments;
     }
+
+    public IReadOnlyList<string> CreateDefaultBestThirdGroupSelection(PredictionState state) =>
+        AssignBestThirdPlaceSlots(new PredictionState
+            {
+                GroupRankings = state.GroupRankings,
+                KnockoutWinners = state.KnockoutWinners,
+                BestThirdGroupIds = [],
+                BestThirdSelectionInitialized = true
+            })
+            .Values
+            .Select(team => TournamentData.Groups.First(group => group.Teams.Any(candidate => candidate.Id == team.Id)).Id)
+            .Distinct()
+            .Take(RequiredBestThirdCount)
+            .ToList();
 
     private static void AddQualificationStatus(
         PredictionState state,

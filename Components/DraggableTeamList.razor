@@ -13,7 +13,13 @@
             @ondrop="() => DropTeam(currentIndex)"
             @ondragend="ClearDragState"
             class="draggable-row @(hoverIndex == currentIndex ? "drop-target" : null)">
-            <TeamCard Team="team" Position="@(currentIndex + 1)" Qualification="@GetQualification(team.Id)" />
+            <TeamCard Team="team"
+                      Position="@(currentIndex + 1)"
+                      Qualification="@GetQualification(team.Id)"
+                      IsThirdPlace="@(currentIndex == 2)"
+                      IsBestThirdSelected="@PredictionState.IsBestThirdGroupSelected(GroupId)"
+                      IsBestThirdSelectionFull="@PredictionState.IsBestThirdSelectionFull"
+                      OnToggleBestThird="ToggleBestThird" />
         </li>
     }
 </ol>
@@ -46,4 +52,7 @@
 
     private QualificationStatus? GetQualification(string teamId) =>
         QualificationStatuses.GetValueOrDefault(teamId);
+
+    private async Task ToggleBestThird() =>
+        await PredictionState.ToggleBestThirdGroupAsync(GroupId);
 }

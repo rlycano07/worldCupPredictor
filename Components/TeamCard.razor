@@ -5,7 +5,6 @@
     }
     <img class="team-flag" src="@Team.FlagImageUrl" alt="" aria-hidden="true" />
     <span class="team-name">@Team.Name</span>
-    <span class="team-code">@Team.FlagCode</span>
     @if (Qualification is not null)
     {
         <span class="qualification-badge">@Qualification.Label</span>
@@ -14,6 +13,15 @@
     {
         <span class="qualification-badge empty" aria-hidden="true"></span>
     }
+    @if (IsThirdPlace)
+    {
+        <button type="button"
+                class="best-third-action @(IsBestThirdSelected ? "selected" : null)"
+                title="@BestThirdButtonTitle"
+                @onclick="OnToggleBestThird">
+            @BestThirdButtonText
+        </button>
+    }
 </div>
 
 @code {
@@ -21,4 +29,18 @@
     [Parameter] public int? Position { get; set; }
     [Parameter] public string? CssClass { get; set; }
     [Parameter] public QualificationStatus? Qualification { get; set; }
+    [Parameter] public bool IsThirdPlace { get; set; }
+    [Parameter] public bool IsBestThirdSelected { get; set; }
+    [Parameter] public bool IsBestThirdSelectionFull { get; set; }
+    [Parameter] public EventCallback OnToggleBestThird { get; set; }
+
+    private string BestThirdButtonText =>
+        IsBestThirdSelected ? "Selected" : IsBestThirdSelectionFull ? "Replace" : "Make 3rd";
+
+    private string BestThirdButtonTitle =>
+        IsBestThirdSelected
+            ? "Remove this team from the selected best third-place qualifiers"
+            : IsBestThirdSelectionFull
+                ? "Select this team as a best third-place qualifier and replace the oldest selected group"
+                : "Select this team as a best third-place qualifier";
 }

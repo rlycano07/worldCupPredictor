@@ -15,13 +15,16 @@
 </section>
 
 <div class="toolbar">
+    <span class="best-third-count">
+        Best 3rd: @PredictionState.BestThirdSelectionCount/@PredictionState.RequiredBestThirdSelectionCount
+    </span>
     <button class="secondary-action" @onclick="ResetAll">Reset all groups</button>
-    <button class="primary-action" disabled="@(!PredictionState.AreGroupsComplete())" @onclick="GoNext">Next</button>
+    <button class="primary-action" disabled="@(!CanContinue)" @onclick="GoNext">Next</button>
 </div>
 
-@if (!PredictionState.AreGroupsComplete())
+@if (!CanContinue)
 {
-    <p class="validation-note" role="status">Every group needs four ranked teams before the bracket can be generated.</p>
+    <p class="validation-note" role="status">Every group needs four ranked teams and eight selected best third-place qualifiers before the bracket can be generated.</p>
 }
 
 <section class="groups-grid" aria-label="Tournament groups">
@@ -42,11 +45,14 @@
 
     private void GoNext()
     {
-        if (PredictionState.AreGroupsComplete())
+        if (CanContinue)
         {
             Navigation.NavigateTo("/knockout");
         }
     }
+
+    private bool CanContinue =>
+        PredictionState.AreGroupsComplete() && PredictionState.AreBestThirdSelectionsComplete();
 
     public void Dispose() => PredictionState.Changed -= StateHasChanged;
 }

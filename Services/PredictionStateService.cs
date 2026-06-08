@@ -19,6 +19,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
 
         State = await localStorage.GetAsync<PredictionState>(StorageKey) ?? CreateDefaultState();
         EnsureAllGroupsExist();
+        EnsureBestThirdSelectionExists();
         IsLoaded = true;
         Changed?.Invoke();
     }
@@ -63,6 +64,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
     public async Task ResetAllAsync()
     {
         State = CreateDefaultState();
+        EnsureBestThirdSelectionExists();
         await SaveAndNotifyAsync();
     }
 
@@ -72,12 +74,42 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
             ranking.Count == group.Teams.Count &&
             ranking.Distinct().Count() == group.Teams.Count);
 
+    public bool AreBestThirdSelectionsComplete() =>
+        State.BestThirdGroupIds.Count == BracketGenerator.RequiredBestThirdCount;
+
     public List<KnockoutRound> GetBracket() => bracketGenerator.Generate(State);
 
     public IReadOnlySet<string> GetQualifiedTeamIds() => bracketGenerator.GetRoundOf32TeamIds(State);
 
     public IReadOnlyDictionary<string, QualificationStatus> GetQualificationStatuses() =>
         bracketGenerator.GetRoundOf32QualificationStatuses(State);
+
+    public bool IsBestThirdGroupSelected(string groupId) => State.BestThirdGroupIds.Contains(groupId);
+
+    public bool IsBestThirdSelectionFull => State.BestThirdGroupIds.Count >= BracketGenerator.RequiredBestThirdCount;
+
+    public int BestThirdSelectionCount => State.BestThirdGroupIds.Count;
+
+    public int RequiredBestThirdSelectionCount => BracketGenerator.RequiredBestThirdCount;
+
+    public async Task ToggleBestThirdGroupAsync(string groupId)
+    {
+        if (State.BestThirdGroupIds.Remove(groupId))
+        {
+            State.KnockoutWinners.Clear();
+            await SaveAndNotifyAsync();
+            return;
+        }
+
+        if (State.BestThirdGroupIds.Count >= BracketGenerator.RequiredBestThirdCount)
+        {
+            State.BestThirdGroupIds.RemoveAt(0);
+        }
+
+        State.BestThirdGroupIds.Add(groupId);
+        State.KnockoutWinners.Clear();
+        await SaveAndNotifyAsync();
+    }
 
     public Team? GetChampion() => bracketGenerator.GetChampion(State);
 
@@ -97,6 +129,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
     {
         await localStorage.RemoveAsync(StorageKey);
         State = CreateDefaultState();
+        EnsureBestThirdSelectionExists();
         await SaveAndNotifyAsync();
     }
 
@@ -138,7 +171,8 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
             GroupRankings = TournamentData.Groups.ToDictionary(
                 group => group.Id,
                 group => group.Teams.Select(team => team.Id).ToList()),
-            KnockoutWinners = new Dictionary<string, string>()
+            KnockoutWinners = new Dictionary<string, string>(),
+            BestThirdSelectionInitialized = false
         };
 
     private void EnsureAllGroupsExist()
@@ -152,7 +186,26 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
                 !currentTeamIds.SetEquals(ranking))
             {
                 State.GroupRankings[group.Id] = group.Teams.Select(team => team.Id).ToList();
+                State.BestThirdSelectionInitialized = false;
             }
         }
+    }
+
+    private void EnsureBestThirdSelectionExists()
+    {
+        var validGroupIds = TournamentData.Groups.Select(group => group.Id).ToHashSet();
+        State.BestThirdGroupIds = State.BestThirdGroupIds
+            .Where(validGroupIds.Contains)
+            .Distinct()
+            .Take(BracketGenerator.RequiredBestThirdCount)
+            .ToList();
+
+        if (State.BestThirdSelectionInitialized)
+        {
+            return;
+        }
+
+        State.BestThirdGroupIds = bracketGenerator.CreateDefaultBestThirdGroupSelection(State).ToList();
+        State.BestThirdSelectionInitialized = true;
     }
 }

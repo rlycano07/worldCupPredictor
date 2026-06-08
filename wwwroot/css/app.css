@@ -268,10 +268,22 @@ main {
     top: 0;
     z-index: 5;
     display: flex;
+    align-items: center;
     justify-content: flex-end;
     gap: 0.75rem;
     padding: 0.75rem 0;
     backdrop-filter: blur(18px);
+}
+
+.best-third-count {
+    margin-right: auto;
+    padding: 0.55rem 0.75rem;
+    color: var(--text);
+    font-size: 0.82rem;
+    font-weight: 900;
+    border: 1px solid rgba(116, 192, 252, 0.42);
+    border-radius: 0.5rem;
+    background: rgba(116, 192, 252, 0.12);
 }
 
 .validation-note {
@@ -332,7 +344,7 @@ main {
 .team-card {
     display: grid;
     min-height: 3.25rem;
-    grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 3.2rem 4.4rem;
+    grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 4.4rem 5.4rem;
     align-items: center;
     gap: 0.65rem;
     padding: 0.65rem;
@@ -401,18 +413,6 @@ main {
     font-weight: 750;
 }
 
-.team-code {
-    justify-self: end;
-    min-width: 2.8rem;
-    padding: 0.25rem 0.35rem;
-    color: #071018;
-    font-size: 0.72rem;
-    font-weight: 950;
-    text-align: center;
-    border-radius: 0.3rem;
-    background: var(--gold);
-}
-
 .qualification-badge {
     justify-self: end;
     min-width: 3.9rem;
@@ -437,6 +437,30 @@ main {
 
 .qualification-badge.empty {
     visibility: hidden;
+}
+
+.best-third-action {
+    min-height: 2rem;
+    padding: 0 0.55rem;
+    color: var(--muted);
+    font-size: 0.72rem;
+    font-weight: 900;
+    border: 1px solid var(--line);
+    border-radius: 0.4rem;
+    background: rgba(255, 255, 255, 0.08);
+    transition: color 160ms ease, background 160ms ease, border-color 160ms ease;
+}
+
+.best-third-action:hover {
+    color: var(--text);
+    border-color: rgba(116, 192, 252, 0.74);
+    background: rgba(116, 192, 252, 0.16);
+}
+
+.best-third-action.selected {
+    color: #061116;
+    border-color: transparent;
+    background: #74c0fc;
 }
 
 .ko-board {
@@ -840,15 +864,16 @@ main {
     }
 
     .team-card {
-        grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 3rem;
-    }
-
-    .team-code {
-        display: none;
+        grid-template-columns: 2rem 2.4rem minmax(0, 1fr) 3.7rem;
     }
 
     .qualification-badge {
         min-width: 3.7rem;
+    }
+
+    .best-third-action {
+        grid-column: 1 / -1;
+        justify-self: stretch;
     }
 
     .ko-board {
