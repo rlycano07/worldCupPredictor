@@ -877,6 +877,64 @@ main {
     gap: 0.65rem;
 }
 
+.share-panel {
+    display: grid;
+    width: 100%;
+    gap: 0.65rem;
+    padding: 0.85rem;
+    text-align: left;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--panel-strong);
+}
+
+.share-panel p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.9rem;
+    line-height: 1.45;
+}
+
+.share-url-row {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    gap: 0.5rem;
+}
+
+.share-url-field {
+    min-width: 0;
+    min-height: 2.75rem;
+    padding: 0 0.75rem;
+    color: var(--text);
+    font: inherit;
+    font-size: 0.85rem;
+    border: 1px solid var(--line);
+    border-radius: 0.5rem;
+    background: var(--surface-subtle);
+}
+
+.share-url-field:focus {
+    outline: 3px solid var(--gold);
+    outline-offset: 2px;
+}
+
+.share-copy-action {
+    min-width: 5.6rem;
+}
+
+.share-copy-status {
+    min-height: 1.2rem;
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 850;
+    opacity: 0;
+    transition: opacity 160ms ease;
+}
+
+.share-copy-status.visible {
+    opacity: 1;
+}
+
 #blazor-error-ui {
     display: none;
     position: fixed;
@@ -1075,5 +1133,13 @@ main {
 
     .champion-actions button {
         flex: 1 1 12rem;
+    }
+
+    .share-url-row {
+        grid-template-columns: 1fr;
+    }
+
+    .share-copy-action {
+        width: 100%;
     }
 }

@@ -16,7 +16,12 @@
 
 @if (Champion is not null && !IsChampionPopupDismissed)
 {
-    <ChampionCard Champion="Champion" OnStartAgain="StartAgain" OnEditGroups="EditGroups" OnShare="SharePrediction" OnClose="DismissChampionPopup" />
+    <ChampionCard Champion="Champion"
+                  ShareUrl="@PredictionState.CreateShareUrl(Navigation.BaseUri)"
+                  OnStartAgain="StartAgain"
+                  OnEditGroups="EditGroups"
+                  OnShare="SharePrediction"
+                  OnClose="DismissChampionPopup" />
 }
 
 <KnockoutBracket Rounds="Rounds" />
