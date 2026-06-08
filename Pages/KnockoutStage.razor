@@ -32,6 +32,11 @@
         PredictionState.Changed += RefreshBracket;
         await PredictionState.InitializeAsync();
 
+        if (TryGetShareStateFromQuery(out var sharedState) && sharedState is not null)
+        {
+            await PredictionState.TryApplyShareStateAsync(sharedState);
+        }
+
         if (!PredictionState.AreGroupsComplete())
         {
             Navigation.NavigateTo("/groups");
@@ -70,8 +75,27 @@
 
     private async Task SharePrediction()
     {
-        var text = PredictionState.CreateShareText();
-        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+        var shareUrl = PredictionState.CreateShareUrl(Navigation.BaseUri);
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", shareUrl);
+    }
+
+    private bool TryGetShareStateFromQuery(out string? sharedState)
+    {
+        var uri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var query = uri.Query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries);
+
+        foreach (var entry in query)
+        {
+            var parts = entry.Split('=', 2);
+            if (parts.Length == 2 && parts[0] == "p")
+            {
+                sharedState = Uri.UnescapeDataString(parts[1].Replace("+", " "));
+                return !string.IsNullOrWhiteSpace(sharedState);
+            }
+        }
+
+        sharedState = null;
+        return false;
     }
 
     public void Dispose() => PredictionState.Changed -= RefreshBracket;
