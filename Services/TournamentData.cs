@@ -22,6 +22,7 @@ public static class TournamentData
         CreateGroup("L", "Group L", "England", "Croatia", "Ghana", "Panama")
     ];
 
+    // FIFA World Cup 2026 Regulations, Annex C: official Round of 32 pairings.
     public static IReadOnlyList<KnockoutMapping> RoundOf32Mapping { get; } =
     [
         Map(73, "A", 2, "B", 2),

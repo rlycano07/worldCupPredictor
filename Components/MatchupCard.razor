@@ -24,9 +24,7 @@
     [Parameter, EditorRequired] public Matchup Matchup { get; set; } = default!;
     [Parameter] public bool IsFinal { get; set; }
 
-    private string MatchNumber => Matchup.Id.StartsWith("r32-", StringComparison.Ordinal)
-        ? Matchup.Id.Replace("r32-", "M", StringComparison.Ordinal)
-        : Matchup.Id.ToUpperInvariant();
+    private string MatchNumber => $"M{Matchup.Id[(Matchup.Id.LastIndexOf('-') + 1)..]}";
 
     private async Task SelectWinner(Team? team)
     {

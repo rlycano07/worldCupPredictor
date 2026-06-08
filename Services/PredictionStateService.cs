@@ -146,20 +146,9 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
 
     private void ClearAffectedLaterRounds(Matchup matchup)
     {
-        var nextRoundId = BracketGenerator.NextRoundId(matchup.RoundId);
-        if (nextRoundId is null)
+        foreach (var matchupId in BracketGenerator.GetAffectedLaterMatchupIds(matchup))
         {
-            return;
-        }
-
-        var nextIndex = matchup.Index / 2;
-
-        while (nextRoundId is not null)
-        {
-            var nextMatchupId = $"{nextRoundId}-{nextIndex + 1}";
-            state.KnockoutWinners.Remove(nextMatchupId);
-            nextIndex /= 2;
-            nextRoundId = BracketGenerator.NextRoundId(nextRoundId);
+            state.KnockoutWinners.Remove(matchupId);
         }
     }
 

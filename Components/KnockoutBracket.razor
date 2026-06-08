@@ -14,10 +14,10 @@
 
     <div class="ko-stage">
         <div class="ko-side ko-left">
-            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 0, 8)" LaneClass="lane-r32" />
-            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 0, 4)" LaneClass="lane-r16" />
-            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 0, 2)" LaneClass="lane-qf" />
-            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 0, 1)" LaneClass="lane-sf" />
+            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32-74", "r32-77", "r32-73", "r32-75", "r32-83", "r32-84", "r32-81", "r32-82")" LaneClass="lane-r32" />
+            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16-89", "r16-90", "r16-93", "r16-94")" LaneClass="lane-r16" />
+            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf-97", "qf-98")" LaneClass="lane-qf" />
+            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf-101")" LaneClass="lane-sf" />
         </div>
 
         <section class="final-hub" aria-label="Final">
@@ -28,10 +28,10 @@
         </section>
 
         <div class="ko-side ko-right">
-            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 1, 1)" LaneClass="lane-sf" />
-            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 2, 2)" LaneClass="lane-qf" />
-            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 4, 4)" LaneClass="lane-r16" />
-            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 8, 8)" LaneClass="lane-r32" />
+            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf-102")" LaneClass="lane-sf" />
+            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf-99", "qf-100")" LaneClass="lane-qf" />
+            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16-91", "r16-92", "r16-95", "r16-96")" LaneClass="lane-r16" />
+            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32-76", "r32-78", "r32-79", "r32-80", "r32-86", "r32-88", "r32-85", "r32-87")" LaneClass="lane-r32" />
         </div>
     </div>
 </section>
@@ -41,8 +41,17 @@
 
     private Matchup FinalMatchup =>
         Rounds.FirstOrDefault(round => round.Id == "final")?.Matchups.FirstOrDefault()
-        ?? new Matchup { Id = "final-1", RoundId = "final", Index = 0 };
+        ?? new Matchup { Id = "final-104", RoundId = "final", Index = 0 };
 
-    private IReadOnlyList<Matchup> TakeMatchups(string roundId, int start, int count) =>
-        Rounds.FirstOrDefault(round => round.Id == roundId)?.Matchups.Skip(start).Take(count).ToList() ?? [];
+    private IReadOnlyList<Matchup> TakeMatchups(params string[] matchupIds)
+    {
+        var matchupsById = Rounds
+            .SelectMany(round => round.Matchups)
+            .ToDictionary(matchup => matchup.Id);
+
+        return matchupIds
+            .Select(matchupId => matchupsById.GetValueOrDefault(matchupId))
+            .OfType<Matchup>()
+            .ToList();
+    }
 }

@@ -15,6 +15,49 @@ public sealed class BracketGenerator
         ("final", "Final", 1)
     ];
 
+    private static readonly IReadOnlyDictionary<string, int[]> MatchNumbersByRound = new Dictionary<string, int[]>
+    {
+        ["r16"] = [89, 90, 91, 92, 93, 94, 95, 96],
+        ["qf"] = [97, 98, 99, 100],
+        ["sf"] = [101, 102],
+        ["final"] = [104]
+    };
+
+    // FIFA World Cup 2026 Regulations, Annex C: official knockout winner routes by match number.
+    private static readonly IReadOnlyDictionary<string, AdvancementRoute> AdvancementRoutes = new Dictionary<string, AdvancementRoute>
+    {
+        ["r32-74"] = new("r16-89", true),
+        ["r32-77"] = new("r16-89", false),
+        ["r32-73"] = new("r16-90", true),
+        ["r32-75"] = new("r16-90", false),
+        ["r32-76"] = new("r16-91", true),
+        ["r32-78"] = new("r16-91", false),
+        ["r32-79"] = new("r16-92", true),
+        ["r32-80"] = new("r16-92", false),
+        ["r32-83"] = new("r16-93", true),
+        ["r32-84"] = new("r16-93", false),
+        ["r32-81"] = new("r16-94", true),
+        ["r32-82"] = new("r16-94", false),
+        ["r32-86"] = new("r16-95", true),
+        ["r32-88"] = new("r16-95", false),
+        ["r32-85"] = new("r16-96", true),
+        ["r32-87"] = new("r16-96", false),
+        ["r16-89"] = new("qf-97", true),
+        ["r16-90"] = new("qf-97", false),
+        ["r16-93"] = new("qf-98", true),
+        ["r16-94"] = new("qf-98", false),
+        ["r16-91"] = new("qf-99", true),
+        ["r16-92"] = new("qf-99", false),
+        ["r16-95"] = new("qf-100", true),
+        ["r16-96"] = new("qf-100", false),
+        ["qf-97"] = new("sf-101", true),
+        ["qf-98"] = new("sf-101", false),
+        ["qf-99"] = new("sf-102", true),
+        ["qf-100"] = new("sf-102", false),
+        ["sf-101"] = new("final-104", true),
+        ["sf-102"] = new("final-104", false)
+    };
+
     public List<KnockoutRound> Generate(PredictionState state)
     {
         var rounds = RoundDefinitions
@@ -24,7 +67,7 @@ public sealed class BracketGenerator
                 Name = definition.Name,
                 Matchups = roundIndex == 0
                     ? CreateRoundOf32Matchups()
-                    : CreateNumberedMatchups(definition.Id, definition.MatchupCount)
+                    : CreateOfficialNumberedMatchups(definition.Id)
             })
             .ToList();
 
@@ -36,7 +79,7 @@ public sealed class BracketGenerator
 
     public Team? GetChampion(PredictionState state)
     {
-        if (!state.KnockoutWinners.TryGetValue("final-1", out var winnerId))
+        if (!state.KnockoutWinners.TryGetValue("final-104", out var winnerId))
         {
             return null;
         }
@@ -70,6 +113,20 @@ public sealed class BracketGenerator
         return index >= 0 && index < RoundDefinitions.Length - 1 ? RoundDefinitions[index + 1].Id : null;
     }
 
+    public static IReadOnlyList<string> GetAffectedLaterMatchupIds(Matchup matchup)
+    {
+        var affectedMatchupIds = new List<string>();
+        var nextMatchupId = matchup.Id;
+
+        while (AdvancementRoutes.TryGetValue(nextMatchupId, out var route))
+        {
+            affectedMatchupIds.Add(route.TargetMatchupId);
+            nextMatchupId = route.TargetMatchupId;
+        }
+
+        return affectedMatchupIds;
+    }
+
     private static List<Matchup> CreateRoundOf32Matchups() =>
         TournamentData.RoundOf32Mapping
             .Select((mapping, index) => new Matchup
@@ -80,11 +137,11 @@ public sealed class BracketGenerator
             })
             .ToList();
 
-    private static List<Matchup> CreateNumberedMatchups(string roundId, int matchupCount) =>
-        Enumerable.Range(0, matchupCount)
-            .Select(index => new Matchup
+    private static List<Matchup> CreateOfficialNumberedMatchups(string roundId) =>
+        MatchNumbersByRound[roundId]
+            .Select((matchNumber, index) => new Matchup
             {
-                Id = $"{roundId}-{index + 1}",
+                Id = $"{roundId}-{matchNumber}",
                 RoundId = roundId,
                 Index = index
             })
@@ -103,10 +160,12 @@ public sealed class BracketGenerator
 
     private static void ApplyWinners(List<KnockoutRound> rounds, PredictionState state)
     {
-        for (var roundIndex = 0; roundIndex < rounds.Count; roundIndex++)
-        {
-            var round = rounds[roundIndex];
+        var matchupsById = rounds
+            .SelectMany(round => round.Matchups)
+            .ToDictionary(matchup => matchup.Id);
 
+        foreach (var round in rounds)
+        {
             foreach (var matchup in round.Matchups)
             {
                 if (!state.KnockoutWinners.TryGetValue(matchup.Id, out var winnerId) || !ContainsTeam(matchup, winnerId))
@@ -116,15 +175,15 @@ public sealed class BracketGenerator
 
                 matchup.WinnerTeamId = winnerId;
 
-                if (roundIndex == rounds.Count - 1)
+                if (!AdvancementRoutes.TryGetValue(matchup.Id, out var route) ||
+                    !matchupsById.TryGetValue(route.TargetMatchupId, out var nextMatchup))
                 {
                     continue;
                 }
 
-                var nextMatchup = rounds[roundIndex + 1].Matchups[matchup.Index / 2];
                 var winner = TournamentData.FindTeam(winnerId);
 
-                if (matchup.Index % 2 == 0)
+                if (route.IsTargetSlotA)
                 {
                     nextMatchup.TeamA = winner;
                 }
@@ -151,8 +210,6 @@ public sealed class BracketGenerator
 
     private static Dictionary<string, Team> AssignBestThirdPlaceSlots(PredictionState state)
     {
-        var assignments = new Dictionary<string, Team>();
-        var usedGroups = new HashSet<string>();
         var bestThirdSlots = TournamentData.RoundOf32Mapping
             .SelectMany(mapping => new[] { mapping.SlotA, mapping.SlotB })
             .Where(slot => slot.IsBestThirdSlot);
@@ -160,28 +217,47 @@ public sealed class BracketGenerator
             ? state.BestThirdGroupIds
             : TournamentData.BestThirdPlaceGroupPriority;
 
-        foreach (var slot in bestThirdSlots)
+        var assignments = new Dictionary<string, string>();
+        AssignBestThirdGroups(bestThirdSlots.ToList(), selectedGroupPriority, assignments, state);
+
+        return assignments
+            .Select(assignment => new { assignment.Key, Team = ResolveRankedTeam(state, assignment.Value, 3) })
+            .Where(assignment => assignment.Team is not null)
+            .ToDictionary(assignment => assignment.Key, assignment => assignment.Team!);
+    }
+
+    private static bool AssignBestThirdGroups(
+        IReadOnlyList<KnockoutSlot> slots,
+        IReadOnlyList<string> selectedGroupPriority,
+        Dictionary<string, string> assignments,
+        PredictionState state,
+        int slotIndex = 0)
+    {
+        if (slotIndex == slots.Count)
         {
-            var selectedGroup = selectedGroupPriority
-                .Where(groupId => slot.EligibleThirdPlaceGroups.Contains(groupId))
-                .FirstOrDefault(groupId => !usedGroups.Contains(groupId) && ResolveRankedTeam(state, groupId, 3) is not null);
-
-            if (selectedGroup is null)
-            {
-                continue;
-            }
-
-            var team = ResolveRankedTeam(state, selectedGroup, 3);
-            if (team is null)
-            {
-                continue;
-            }
-
-            assignments[slot.GroupId] = team;
-            usedGroups.Add(selectedGroup);
+            return HasNoPotentialSameGroupRoundOf16Matchup(assignments);
         }
 
-        return assignments;
+        var slot = slots[slotIndex];
+        foreach (var groupId in selectedGroupPriority)
+        {
+            if (assignments.ContainsValue(groupId) ||
+                !slot.EligibleThirdPlaceGroups.Contains(groupId) ||
+                ResolveRankedTeam(state, groupId, 3) is null)
+            {
+                continue;
+            }
+
+            assignments[slot.GroupId] = groupId;
+            if (AssignBestThirdGroups(slots, selectedGroupPriority, assignments, state, slotIndex + 1))
+            {
+                return true;
+            }
+
+            assignments.Remove(slot.GroupId);
+        }
+
+        return false;
     }
 
     public IReadOnlyList<string> CreateDefaultBestThirdGroupSelection(PredictionState state) =>
@@ -242,4 +318,63 @@ public sealed class BracketGenerator
 
     private static bool ContainsTeam(Matchup matchup, string teamId) =>
         matchup.TeamA?.Id == teamId || matchup.TeamB?.Id == teamId;
+
+    private static bool HasNoPotentialSameGroupRoundOf16Matchup(IReadOnlyDictionary<string, string> bestThirdAssignments)
+    {
+        var roundOf16Pairings = AdvancementRoutes
+            .Where(route => route.Key.StartsWith("r32-", StringComparison.Ordinal))
+            .GroupBy(route => route.Value.TargetMatchupId)
+            .Select(group => group.Select(route => route.Key).ToList());
+
+        foreach (var pairing in roundOf16Pairings)
+        {
+            if (pairing.Count != 2)
+            {
+                continue;
+            }
+
+            var firstGroups = GetPossibleWinnerGroupIds(pairing[0], bestThirdAssignments);
+            var secondGroups = GetPossibleWinnerGroupIds(pairing[1], bestThirdAssignments);
+
+            if (firstGroups.Overlaps(secondGroups))
+            {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static HashSet<string> GetPossibleWinnerGroupIds(
+        string matchupId,
+        IReadOnlyDictionary<string, string> bestThirdAssignments)
+    {
+        var mapping = TournamentData.RoundOf32Mapping.First(mapping => mapping.MatchupId == matchupId);
+        var groupIds = new HashSet<string>();
+
+        AddPossibleWinnerGroupId(mapping.SlotA, bestThirdAssignments, groupIds);
+        AddPossibleWinnerGroupId(mapping.SlotB, bestThirdAssignments, groupIds);
+
+        return groupIds;
+    }
+
+    private static void AddPossibleWinnerGroupId(
+        KnockoutSlot slot,
+        IReadOnlyDictionary<string, string> bestThirdAssignments,
+        HashSet<string> groupIds)
+    {
+        if (slot.IsBestThirdSlot)
+        {
+            if (bestThirdAssignments.TryGetValue(slot.GroupId, out var assignedGroupId))
+            {
+                groupIds.Add(assignedGroupId);
+            }
+
+            return;
+        }
+
+        groupIds.Add(slot.GroupId);
+    }
+
+    private sealed record AdvancementRoute(string TargetMatchupId, bool IsTargetSlotA);
 }
