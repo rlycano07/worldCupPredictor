@@ -1,4 +1,4 @@
-<section class="round-lane" aria-label="@Title">
+<section class="round-lane @LaneClass" aria-label="@Title">
     <h3>@Title</h3>
     <div class="matchup-stack">
         @foreach (var matchup in Matchups)
@@ -11,4 +11,5 @@
 @code {
     [Parameter, EditorRequired] public string Title { get; set; } = string.Empty;
     [Parameter, EditorRequired] public IReadOnlyList<Matchup> Matchups { get; set; } = [];
+    [Parameter] public string? LaneClass { get; set; }
 }

@@ -1,8 +1,0 @@
-<ol class="stepper" aria-label="Prediction progress">
-    <li class="@(CurrentStep >= 1 ? "active" : null)">Groups</li>
-    <li class="@(CurrentStep >= 2 ? "active" : null)">Knockout</li>
-</ol>
-
-@code {
-    [Parameter] public int CurrentStep { get; set; }
-}

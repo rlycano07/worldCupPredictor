@@ -14,10 +14,10 @@
 
     <div class="ko-stage">
         <div class="ko-side ko-left">
-            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 0, 8)" />
-            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 0, 4)" />
-            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 0, 2)" />
-            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 0, 1)" />
+            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 0, 8)" LaneClass="lane-r32" />
+            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 0, 4)" LaneClass="lane-r16" />
+            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 0, 2)" LaneClass="lane-qf" />
+            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 0, 1)" LaneClass="lane-sf" />
         </div>
 
         <section class="final-hub" aria-label="Final">
@@ -28,10 +28,10 @@
         </section>
 
         <div class="ko-side ko-right">
-            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 1, 1)" />
-            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 2, 2)" />
-            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 4, 4)" />
-            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 8, 8)" />
+            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 1, 1)" LaneClass="lane-sf" />
+            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 2, 2)" LaneClass="lane-qf" />
+            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 4, 4)" LaneClass="lane-r16" />
+            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 8, 8)" LaneClass="lane-r32" />
         </div>
     </div>
 </section>
