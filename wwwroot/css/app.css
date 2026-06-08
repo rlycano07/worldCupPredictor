@@ -129,7 +129,7 @@ a {
 }
 
 .app-shell {
-    width: min(1500px, 100%);
+    width: min(1600px, 100%);
     margin: 0 auto;
     padding: 0 1rem 2rem;
 }
@@ -160,10 +160,16 @@ a {
     width: 2.5rem;
     height: 2.5rem;
     place-items: center;
+    overflow: hidden;
     border-radius: 0.5rem;
-    color: var(--on-accent);
     background: var(--accent);
     box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.brand-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .app-header nav a {
