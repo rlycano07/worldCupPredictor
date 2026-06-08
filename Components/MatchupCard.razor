@@ -1,0 +1,62 @@
+@inject PredictionStateService PredictionState
+
+<article class="matchup-card @(Matchup.IsComplete ? null : "incomplete") @(IsFinal ? "final-matchup" : null)">
+    <div class="match-number">@MatchNumber</div>
+    <button type="button"
+            disabled="@(Matchup.TeamA is null)"
+            class="@TeamButtonClass(Matchup.TeamA)"
+            @onclick="() => SelectWinner(Matchup.TeamA)">
+        @TeamLabel(Matchup.TeamA)
+    </button>
+    <button type="button"
+            disabled="@(Matchup.TeamB is null)"
+            class="@TeamButtonClass(Matchup.TeamB)"
+            @onclick="() => SelectWinner(Matchup.TeamB)">
+        @TeamLabel(Matchup.TeamB)
+    </button>
+</article>
+
+@code {
+    [Parameter, EditorRequired] public Matchup Matchup { get; set; } = default!;
+    [Parameter] public bool IsFinal { get; set; }
+
+    private string MatchNumber => Matchup.Id.StartsWith("r32-", StringComparison.Ordinal)
+        ? Matchup.Id.Replace("r32-", "M", StringComparison.Ordinal)
+        : Matchup.Id.ToUpperInvariant();
+
+    private async Task SelectWinner(Team? team)
+    {
+        if (team is not null)
+        {
+            await PredictionState.SelectWinnerAsync(Matchup, team);
+        }
+    }
+
+    private string TeamButtonClass(Team? team)
+    {
+        var selected = team is not null && Matchup.WinnerTeamId == team.Id ? "selected" : null;
+        return $"matchup-team {selected}";
+    }
+
+    private static RenderFragment TeamLabel(Team? team) => builder =>
+    {
+        if (team is null)
+        {
+            builder.OpenElement(0, "span");
+            builder.AddAttribute(1, "class", "team-placeholder");
+            builder.AddContent(2, "TBD");
+            builder.CloseElement();
+            return;
+        }
+
+        builder.OpenElement(3, "span");
+        builder.AddAttribute(4, "class", "match-team-code");
+        builder.AddContent(5, team.FlagCode);
+        builder.CloseElement();
+
+        builder.OpenElement(6, "span");
+        builder.AddAttribute(7, "class", "match-team-name");
+        builder.AddContent(8, team.Name);
+        builder.CloseElement();
+    };
+}

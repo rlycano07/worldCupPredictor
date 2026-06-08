@@ -1,0 +1,52 @@
+@page "/groups"
+@implements IDisposable
+@inject PredictionStateService PredictionState
+@inject NavigationManager Navigation
+
+<PageTitle>Group Stage - World Cup Predictor</PageTitle>
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Step 1 of 2</p>
+        <h1>Rank the Groups</h1>
+        <p>Drag teams within each card. Group winners, runners-up, and configured third-place qualifiers enter the Round of 32.</p>
+    </div>
+    <ProgressStepper CurrentStep="1" />
+</section>
+
+<div class="toolbar">
+    <button class="secondary-action" @onclick="ResetAll">Reset all groups</button>
+    <button class="primary-action" disabled="@(!PredictionState.AreGroupsComplete())" @onclick="GoNext">Next</button>
+</div>
+
+@if (!PredictionState.AreGroupsComplete())
+{
+    <p class="validation-note" role="status">Every group needs four ranked teams before the bracket can be generated.</p>
+}
+
+<section class="groups-grid" aria-label="Tournament groups">
+    @foreach (var group in TournamentData.Groups)
+    {
+        <GroupCard Group="group" />
+    }
+</section>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        PredictionState.Changed += StateHasChanged;
+        await PredictionState.InitializeAsync();
+    }
+
+    private async Task ResetAll() => await PredictionState.ResetAllAsync();
+
+    private void GoNext()
+    {
+        if (PredictionState.AreGroupsComplete())
+        {
+            Navigation.NavigateTo("/knockout");
+        }
+    }
+
+    public void Dispose() => PredictionState.Changed -= StateHasChanged;
+}

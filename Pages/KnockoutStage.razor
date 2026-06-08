@@ -1,0 +1,64 @@
+@page "/knockout"
+@implements IDisposable
+@inject PredictionStateService PredictionState
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
+
+<PageTitle>Knockout Stage - World Cup Predictor</PageTitle>
+
+<section class="page-heading">
+    <div>
+        <p class="eyebrow">Step 2 of 2</p>
+        <h1>Pick the Knockout Winners</h1>
+        <p>Click a team in each matchup to move it forward. Changing an earlier pick clears affected later picks.</p>
+    </div>
+    <ProgressStepper CurrentStep="2" />
+</section>
+
+@if (Champion is not null)
+{
+    <ChampionCard Champion="Champion" OnStartAgain="StartAgain" OnEditGroups="EditGroups" OnShare="SharePrediction" />
+}
+
+<KnockoutBracket Rounds="Rounds" />
+
+@code {
+    private List<KnockoutRound> Rounds { get; set; } = [];
+    private Team? Champion => PredictionState.GetChampion();
+
+    protected override async Task OnInitializedAsync()
+    {
+        PredictionState.Changed += RefreshBracket;
+        await PredictionState.InitializeAsync();
+
+        if (!PredictionState.AreGroupsComplete())
+        {
+            Navigation.NavigateTo("/groups");
+            return;
+        }
+
+        RefreshBracket();
+    }
+
+    private void RefreshBracket()
+    {
+        Rounds = PredictionState.GetBracket();
+        StateHasChanged();
+    }
+
+    private async Task StartAgain()
+    {
+        await PredictionState.StartAgainAsync();
+        Navigation.NavigateTo("/");
+    }
+
+    private void EditGroups() => Navigation.NavigateTo("/groups");
+
+    private async Task SharePrediction()
+    {
+        var text = PredictionState.CreateShareText();
+        await JsRuntime.InvokeVoidAsync("navigator.clipboard.writeText", text);
+    }
+
+    public void Dispose() => PredictionState.Changed -= RefreshBracket;
+}

@@ -1,0 +1,16 @@
+@inherits LayoutComponentBase
+@inject PredictionStateService PredictionState
+
+<div class="app-shell">
+    <AppHeader />
+    <main>
+        @Body
+    </main>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await PredictionState.InitializeAsync();
+    }
+}

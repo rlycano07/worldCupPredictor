@@ -1,0 +1,35 @@
+@page "/"
+@inject NavigationManager Navigation
+
+<PageTitle>World Cup Predictor</PageTitle>
+
+<section class="hero">
+    <div class="hero-copy">
+        <p class="eyebrow">Client-side bracket builder</p>
+        <h1>World Cup Predictor</h1>
+        <p>
+            Rank every group, generate a Round of 32 bracket, and click your way through
+            the knockout rounds until your champion lifts the trophy.
+        </p>
+        <button class="primary-action" @onclick="StartPrediction">Start Prediction</button>
+    </div>
+    <div class="hero-board" aria-hidden="true">
+        <div class="pitch-line"></div>
+        <div class="hero-score">
+            <span>Groups</span>
+            <strong>12</strong>
+        </div>
+        <div class="hero-score">
+            <span>Teams</span>
+            <strong>48</strong>
+        </div>
+        <div class="hero-score">
+            <span>Champion</span>
+            <strong>1</strong>
+        </div>
+    </div>
+</section>
+
+@code {
+    private void StartPrediction() => Navigation.NavigateTo("/groups");
+}

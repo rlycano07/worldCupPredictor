@@ -1,0 +1,14 @@
+<div class="team-card @CssClass">
+    @if (Position is not null)
+    {
+        <span class="team-position">@Position</span>
+    }
+    <span class="team-flag">@Team.FlagCode</span>
+    <span class="team-name">@Team.Name</span>
+</div>
+
+@code {
+    [Parameter, EditorRequired] public Team Team { get; set; } = default!;
+    [Parameter] public int? Position { get; set; }
+    [Parameter] public string? CssClass { get; set; }
+}

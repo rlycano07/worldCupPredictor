@@ -1,0 +1,44 @@
+@inject PredictionStateService PredictionState
+
+<ol class="team-list" aria-label="@($"{GroupName} ranking")">
+    @for (var index = 0; index < Teams.Count; index++)
+    {
+        var team = Teams[index];
+        var currentIndex = index;
+        <li draggable="true"
+            @key="team.Id"
+            @ondragstart="() => draggedIndex = currentIndex"
+            @ondragover:preventDefault
+            @ondragover="() => hoverIndex = currentIndex"
+            @ondrop="() => DropTeam(currentIndex)"
+            @ondragend="ClearDragState"
+            class="draggable-row @(hoverIndex == currentIndex ? "drop-target" : null)">
+            <TeamCard Team="team" Position="@(currentIndex + 1)" />
+        </li>
+    }
+</ol>
+
+@code {
+    [Parameter, EditorRequired] public string GroupId { get; set; } = default!;
+    [Parameter, EditorRequired] public string GroupName { get; set; } = default!;
+    [Parameter, EditorRequired] public IReadOnlyList<Team> Teams { get; set; } = [];
+
+    private int? draggedIndex;
+    private int? hoverIndex;
+
+    private async Task DropTeam(int targetIndex)
+    {
+        if (draggedIndex is int sourceIndex)
+        {
+            await PredictionState.ReorderGroupAsync(GroupId, sourceIndex, targetIndex);
+        }
+
+        ClearDragState();
+    }
+
+    private void ClearDragState()
+    {
+        draggedIndex = null;
+        hoverIndex = null;
+    }
+}

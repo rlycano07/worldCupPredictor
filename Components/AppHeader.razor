@@ -1,0 +1,16 @@
+@inject NavigationManager Navigation
+
+<header class="app-header">
+    <button class="brand-button" @onclick="GoHome" aria-label="World Cup Predictor home">
+        <span class="brand-mark" aria-hidden="true">W</span>
+        <span>World Cup Predictor</span>
+    </button>
+    <nav aria-label="Prediction steps">
+        <a href="/groups">Groups</a>
+        <a href="/knockout">Bracket</a>
+    </nav>
+</header>
+
+@code {
+    private void GoHome() => Navigation.NavigateTo("/");
+}

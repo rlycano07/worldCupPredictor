@@ -1,0 +1,48 @@
+<section class="ko-board" aria-label="Knockout bracket">
+    <div class="ko-board-topline" aria-hidden="true">
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
+
+    <div class="ko-board-title">
+        <p class="eyebrow">World Cup Predictor</p>
+        <h2>Knockout Stage</h2>
+    </div>
+
+    <div class="ko-stage">
+        <div class="ko-side ko-left">
+            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 0, 8)" />
+            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 0, 4)" />
+            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 0, 2)" />
+            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 0, 1)" />
+        </div>
+
+        <section class="final-hub" aria-label="Final">
+            <p class="round-kicker">Grand Final</p>
+            <div class="cup-mark" aria-hidden="true">🏆</div>
+            <MatchupCard Matchup="@FinalMatchup" IsFinal="true" />
+            <div class="third-place-marker">Final winner becomes champion</div>
+        </section>
+
+        <div class="ko-side ko-right">
+            <KnockoutRoundColumn Title="SF" Matchups="@TakeMatchups("sf", 1, 1)" />
+            <KnockoutRoundColumn Title="QF" Matchups="@TakeMatchups("qf", 2, 2)" />
+            <KnockoutRoundColumn Title="R16" Matchups="@TakeMatchups("r16", 4, 4)" />
+            <KnockoutRoundColumn Title="R32" Matchups="@TakeMatchups("r32", 8, 8)" />
+        </div>
+    </div>
+</section>
+
+@code {
+    [Parameter, EditorRequired] public IReadOnlyList<KnockoutRound> Rounds { get; set; } = [];
+
+    private Matchup FinalMatchup =>
+        Rounds.FirstOrDefault(round => round.Id == "final")?.Matchups.FirstOrDefault()
+        ?? new Matchup { Id = "final-1", RoundId = "final", Index = 0 };
+
+    private IReadOnlyList<Matchup> TakeMatchups(string roundId, int start, int count) =>
+        Rounds.FirstOrDefault(round => round.Id == roundId)?.Matchups.Skip(start).Take(count).ToList() ?? [];
+}

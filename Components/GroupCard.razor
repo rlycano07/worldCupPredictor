@@ -1,0 +1,20 @@
+@inject PredictionStateService PredictionState
+
+<article class="group-card">
+    <div class="group-card-header">
+        <div>
+            <p class="eyebrow">@Group.Id</p>
+            <h2>@Group.Name</h2>
+        </div>
+        <button class="ghost-action" @onclick="ResetGroup">Reset</button>
+    </div>
+    <DraggableTeamList GroupId="@Group.Id" GroupName="@Group.Name" Teams="@Teams" />
+</article>
+
+@code {
+    [Parameter, EditorRequired] public Group Group { get; set; } = default!;
+
+    private IReadOnlyList<Team> Teams => PredictionState.GetGroupRanking(Group.Id);
+
+    private async Task ResetGroup() => await PredictionState.ResetGroupAsync(Group.Id);
+}
