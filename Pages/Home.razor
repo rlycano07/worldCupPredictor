@@ -1,5 +1,6 @@
 @page "/"
 @inject NavigationManager Navigation
+@inject PredictionStateService PredictionState
 
 <PageTitle>World Cup Predictor</PageTitle>
 
@@ -33,5 +34,9 @@
 </section>
 
 @code {
-    private void StartPrediction() => Navigation.NavigateTo("/groups");
+    private async Task StartPrediction()
+    {
+        await PredictionState.ResetAllAsync();
+        Navigation.NavigateTo("/groups");
+    }
 }
