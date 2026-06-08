@@ -9,16 +9,37 @@ public sealed class LocalStorageService(IJSRuntime jsRuntime)
 
     public async Task<T?> GetAsync<T>(string key)
     {
-        var json = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
-        return string.IsNullOrWhiteSpace(json) ? default : JsonSerializer.Deserialize<T>(json, JsonOptions);
+        try
+        {
+            var json = await jsRuntime.InvokeAsync<string?>("localStorage.getItem", key);
+            return string.IsNullOrWhiteSpace(json) ? default : JsonSerializer.Deserialize<T>(json, JsonOptions);
+        }
+        catch (Exception)
+        {
+            return default;
+        }
     }
 
     public async Task SetAsync<T>(string key, T value)
     {
-        var json = JsonSerializer.Serialize(value, JsonOptions);
-        await jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
+        try
+        {
+            var json = JsonSerializer.Serialize(value, JsonOptions);
+            await jsRuntime.InvokeVoidAsync("localStorage.setItem", key, json);
+        }
+        catch (Exception)
+        {
+        }
     }
 
-    public async Task RemoveAsync(string key) =>
-        await jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+    public async Task RemoveAsync(string key)
+    {
+        try
+        {
+            await jsRuntime.InvokeVoidAsync("localStorage.removeItem", key);
+        }
+        catch (Exception)
+        {
+        }
+    }
 }

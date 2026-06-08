@@ -5,28 +5,32 @@ namespace WorldCupPredict.Services;
 public sealed class PredictionStateService(LocalStorageService localStorage, BracketGenerator bracketGenerator)
 {
     private const string StorageKey = "world-cup-predictor-state";
+    private const int CurrentStateVersion = 1;
+    private readonly object initializationLock = new();
+    private Task? initializationTask;
 
-    public PredictionState State { get; private set; } = new();
+    private PredictionState state = CreateDefaultState();
+
     public bool IsLoaded { get; private set; }
     public event Action? Changed;
 
-    public async Task InitializeAsync()
+    public Task InitializeAsync()
     {
         if (IsLoaded)
         {
-            return;
+            return Task.CompletedTask;
         }
 
-        State = await localStorage.GetAsync<PredictionState>(StorageKey) ?? CreateDefaultState();
-        EnsureAllGroupsExist();
-        EnsureBestThirdSelectionExists();
-        IsLoaded = true;
-        Changed?.Invoke();
+        lock (initializationLock)
+        {
+            initializationTask ??= InitializeCoreAsync();
+            return initializationTask;
+        }
     }
 
     public IReadOnlyList<Team> GetGroupRanking(string groupId)
     {
-        if (!State.GroupRankings.TryGetValue(groupId, out var ranking))
+        if (!state.GroupRankings.TryGetValue(groupId, out var ranking))
         {
             return [];
         }
@@ -36,7 +40,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
 
     public async Task ReorderGroupAsync(string groupId, int fromIndex, int toIndex)
     {
-        if (!State.GroupRankings.TryGetValue(groupId, out var ranking) ||
+        if (!state.GroupRankings.TryGetValue(groupId, out var ranking) ||
             fromIndex == toIndex ||
             fromIndex < 0 ||
             toIndex < 0 ||
@@ -49,69 +53,69 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
         var movedTeam = ranking[fromIndex];
         ranking.RemoveAt(fromIndex);
         ranking.Insert(toIndex, movedTeam);
-        State.KnockoutWinners.Clear();
+        state.KnockoutWinners.Clear();
         await SaveAndNotifyAsync();
     }
 
     public async Task ResetGroupAsync(string groupId)
     {
         var group = TournamentData.Groups.First(group => group.Id == groupId);
-        State.GroupRankings[groupId] = group.Teams.Select(team => team.Id).ToList();
-        State.KnockoutWinners.Clear();
+        state.GroupRankings[groupId] = group.Teams.Select(team => team.Id).ToList();
+        state.KnockoutWinners.Clear();
         await SaveAndNotifyAsync();
     }
 
     public async Task ResetAllAsync()
     {
-        State = CreateDefaultState();
+        state = CreateDefaultState();
         EnsureBestThirdSelectionExists();
         await SaveAndNotifyAsync();
     }
 
     public bool AreGroupsComplete() =>
         TournamentData.Groups.All(group =>
-            State.GroupRankings.TryGetValue(group.Id, out var ranking) &&
+            state.GroupRankings.TryGetValue(group.Id, out var ranking) &&
             ranking.Count == group.Teams.Count &&
             ranking.Distinct().Count() == group.Teams.Count);
 
     public bool AreBestThirdSelectionsComplete() =>
-        State.BestThirdGroupIds.Count == BracketGenerator.RequiredBestThirdCount;
+        state.BestThirdGroupIds.Count == BracketGenerator.RequiredBestThirdCount;
 
-    public List<KnockoutRound> GetBracket() => bracketGenerator.Generate(State);
+    public List<KnockoutRound> GetBracket() => bracketGenerator.Generate(state);
 
-    public IReadOnlySet<string> GetQualifiedTeamIds() => bracketGenerator.GetRoundOf32TeamIds(State);
+    public IReadOnlySet<string> GetQualifiedTeamIds() => bracketGenerator.GetRoundOf32TeamIds(state);
 
     public IReadOnlyDictionary<string, QualificationStatus> GetQualificationStatuses() =>
-        bracketGenerator.GetRoundOf32QualificationStatuses(State);
+        bracketGenerator.GetRoundOf32QualificationStatuses(state);
 
-    public bool IsBestThirdGroupSelected(string groupId) => State.BestThirdGroupIds.Contains(groupId);
+    public bool IsBestThirdGroupSelected(string groupId) => state.BestThirdGroupIds.Contains(groupId);
 
-    public bool IsBestThirdSelectionFull => State.BestThirdGroupIds.Count >= BracketGenerator.RequiredBestThirdCount;
+    public bool IsBestThirdSelectionFull => state.BestThirdGroupIds.Count >= BracketGenerator.RequiredBestThirdCount;
 
-    public int BestThirdSelectionCount => State.BestThirdGroupIds.Count;
+    public int BestThirdSelectionCount => state.BestThirdGroupIds.Count;
 
     public int RequiredBestThirdSelectionCount => BracketGenerator.RequiredBestThirdCount;
 
     public async Task ToggleBestThirdGroupAsync(string groupId)
     {
-        if (State.BestThirdGroupIds.Remove(groupId))
+        if (state.BestThirdGroupIds.Remove(groupId))
         {
-            State.KnockoutWinners.Clear();
+            state.KnockoutWinners.Clear();
             await SaveAndNotifyAsync();
             return;
         }
 
-        if (State.BestThirdGroupIds.Count >= BracketGenerator.RequiredBestThirdCount)
+        if (state.BestThirdGroupIds.Count >= BracketGenerator.RequiredBestThirdCount)
         {
-            State.BestThirdGroupIds.RemoveAt(0);
+            state.BestThirdGroupIds.RemoveAt(0);
         }
 
-        State.BestThirdGroupIds.Add(groupId);
-        State.KnockoutWinners.Clear();
+        state.BestThirdGroupIds.Add(groupId);
+        state.KnockoutWinners.Clear();
         await SaveAndNotifyAsync();
     }
 
-    public Team? GetChampion() => bracketGenerator.GetChampion(State);
+    public Team? GetChampion() => bracketGenerator.GetChampion(state);
 
     public async Task SelectWinnerAsync(Matchup matchup, Team team)
     {
@@ -120,7 +124,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
             return;
         }
 
-        State.KnockoutWinners[matchup.Id] = team.Id;
+        state.KnockoutWinners[matchup.Id] = team.Id;
         ClearAffectedLaterRounds(matchup);
         await SaveAndNotifyAsync();
     }
@@ -128,7 +132,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
     public async Task StartAgainAsync()
     {
         await localStorage.RemoveAsync(StorageKey);
-        State = CreateDefaultState();
+        state = CreateDefaultState();
         EnsureBestThirdSelectionExists();
         await SaveAndNotifyAsync();
     }
@@ -153,7 +157,7 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
         while (nextRoundId is not null)
         {
             var nextMatchupId = $"{nextRoundId}-{nextIndex + 1}";
-            State.KnockoutWinners.Remove(nextMatchupId);
+            state.KnockoutWinners.Remove(nextMatchupId);
             nextIndex /= 2;
             nextRoundId = BracketGenerator.NextRoundId(nextRoundId);
         }
@@ -161,13 +165,14 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
 
     private async Task SaveAndNotifyAsync()
     {
-        await localStorage.SetAsync(StorageKey, State);
+        await localStorage.SetAsync(StorageKey, state);
         Changed?.Invoke();
     }
 
     private static PredictionState CreateDefaultState() =>
         new()
         {
+            StateVersion = CurrentStateVersion,
             GroupRankings = TournamentData.Groups.ToDictionary(
                 group => group.Id,
                 group => group.Teams.Select(team => team.Id).ToList()),
@@ -175,18 +180,59 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
             BestThirdSelectionInitialized = false
         };
 
+    private async Task InitializeCoreAsync()
+    {
+        try
+        {
+            var loadedState = await localStorage.GetAsync<PredictionState>(StorageKey);
+            state = IsSupportedStateVersion(loadedState) ? loadedState! : CreateDefaultState();
+            state.StateVersion = CurrentStateVersion;
+
+            EnsureStorageCollectionsExist();
+            EnsureAllGroupsExist();
+            EnsureBestThirdSelectionExists();
+            EnsureKnockoutWinnersAreValid();
+        }
+        catch
+        {
+            state = CreateDefaultState();
+            EnsureBestThirdSelectionExists();
+        }
+
+        IsLoaded = true;
+        await localStorage.SetAsync(StorageKey, state);
+        Changed?.Invoke();
+    }
+
+    private static bool IsSupportedStateVersion(PredictionState? loadedState) =>
+        loadedState is not null && loadedState.StateVersion is 0 or CurrentStateVersion;
+
+    private void EnsureStorageCollectionsExist()
+    {
+        state.GroupRankings ??= [];
+        state.KnockoutWinners ??= [];
+        state.BestThirdGroupIds ??= [];
+    }
+
     private void EnsureAllGroupsExist()
     {
+        var validGroupIds = TournamentData.Groups.Select(group => group.Id).ToHashSet();
+        foreach (var groupId in state.GroupRankings.Keys.Where(groupId => !validGroupIds.Contains(groupId)).ToList())
+        {
+            state.GroupRankings.Remove(groupId);
+        }
+
         foreach (var group in TournamentData.Groups)
         {
             var currentTeamIds = group.Teams.Select(team => team.Id).ToHashSet();
 
-            if (!State.GroupRankings.TryGetValue(group.Id, out var ranking) ||
+            if (!state.GroupRankings.TryGetValue(group.Id, out var ranking) ||
+                ranking is null ||
                 ranking.Count != group.Teams.Count ||
                 !currentTeamIds.SetEquals(ranking))
             {
-                State.GroupRankings[group.Id] = group.Teams.Select(team => team.Id).ToList();
-                State.BestThirdSelectionInitialized = false;
+                state.GroupRankings[group.Id] = group.Teams.Select(team => team.Id).ToList();
+                state.BestThirdSelectionInitialized = false;
             }
         }
     }
@@ -194,18 +240,41 @@ public sealed class PredictionStateService(LocalStorageService localStorage, Bra
     private void EnsureBestThirdSelectionExists()
     {
         var validGroupIds = TournamentData.Groups.Select(group => group.Id).ToHashSet();
-        State.BestThirdGroupIds = State.BestThirdGroupIds
+        state.BestThirdGroupIds = state.BestThirdGroupIds
             .Where(validGroupIds.Contains)
             .Distinct()
             .Take(BracketGenerator.RequiredBestThirdCount)
             .ToList();
 
-        if (State.BestThirdSelectionInitialized)
+        if (state.BestThirdSelectionInitialized)
         {
             return;
         }
 
-        State.BestThirdGroupIds = bracketGenerator.CreateDefaultBestThirdGroupSelection(State).ToList();
-        State.BestThirdSelectionInitialized = true;
+        state.BestThirdGroupIds = bracketGenerator.CreateDefaultBestThirdGroupSelection(state).ToList();
+        state.BestThirdSelectionInitialized = true;
+    }
+
+    private void EnsureKnockoutWinnersAreValid()
+    {
+        var validTeamIds = TournamentData.Groups.SelectMany(group => group.Teams).Select(team => team.Id).ToHashSet();
+        var generatedBracket = bracketGenerator.Generate(state);
+        var validWinnerIdsByMatchup = generatedBracket
+            .SelectMany(round => round.Matchups)
+            .ToDictionary(
+                matchup => matchup.Id,
+                matchup => new[] { matchup.TeamA?.Id, matchup.TeamB?.Id }
+                    .OfType<string>()
+                    .ToHashSet());
+
+        foreach (var (matchupId, teamId) in state.KnockoutWinners.ToList())
+        {
+            if (!validTeamIds.Contains(teamId) ||
+                !validWinnerIdsByMatchup.TryGetValue(matchupId, out var validWinnerIds) ||
+                !validWinnerIds.Contains(teamId))
+            {
+                state.KnockoutWinners.Remove(matchupId);
+            }
+        }
     }
 }
